@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Watch a cooking lecture, then mark it complete to advance your ChefPath journey." />
+  <title>Lecture — ChefPath</title>
+  <link rel="stylesheet" th:href="@{/css/design-system.css}" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+</head>
+<body>
+
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Top Navigation Bar -->
+  <nav class="top-bar">
+    <a href="/dashboard" class="top-bar__brand">
+      <span class="top-bar__brand-icon">👨‍🍳</span>
+      ChefPath
+    </a>
+    <div class="top-bar__right">
+      <button class="btn btn-ghost" onclick="Auth.signOut()" title="Sign out">
+        <span class="material-symbols-outlined">logout</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Lecture Content -->
+  <main class="lecture-page">
+    <!-- Header -->
+    <div class="lecture-header animate-in">
+      <button class="lecture-header__back" onclick="history.back()">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </button>
+      <div class="lecture-header__info">
+        <span id="lecture-unit-title" class="lecture-header__unit-title">Loading…</span>
+        <span id="lecture-num" class="lecture-header__lecture-num"></span>
+      </div>
+    </div>
+
+    <!-- Video -->
+    <div class="animate-in animate-in-delay-1">
+      <div id="video-container" class="video-container">
+        <div class="video-placeholder">
+          <div class="video-placeholder__play">
+            <span class="material-symbols-outlined">play_arrow</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="lecture-content animate-in animate-in-delay-2">
+      <h1 id="lecture-title" class="lecture-content__title">Loading…</h1>
+      <p id="lecture-description" class="lecture-content__description"></p>
+      <div id="lecture-image" class="lecture-content__image"></div>
+    </div>
+  </main>
+
+  <!-- Bottom Action Bar -->
+  <div class="action-bar animate-in animate-in-delay-3">
+    <button class="btn btn-secondary" onclick="navigatePrevious()">
+      <span class="material-symbols-outlined">arrow_back</span>
+      Previous
+    </button>
+    <button class="btn btn-primary btn-lg" onclick="completeLecture()">
+      <span class="material-symbols-outlined">check_circle</span>
+      Complete
+    </button>
+    <button class="btn btn-secondary" onclick="navigateNext()">
+      Next
+      <span class="material-symbols-outlined">arrow_forward</span>
+    </button>
+  </div>
+
+  <script th:inline="javascript">
+    window.__SUPABASE_URL__ = /*[[${supabaseUrl}]]*/ '';
+    window.__SUPABASE_ANON_KEY__ = /*[[${supabaseAnonKey}]]*/ '';
+  </script>
+  <script th:src="@{/js/supabase-auth.js}"></script>
+  <script th:src="@{/js/app.js}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', initLectureDetail);
+  </script>
+</body>
+</html>
