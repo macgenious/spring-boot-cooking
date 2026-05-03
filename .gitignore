@@ -35,3 +35,6 @@ build/
 ### Local agent / sandbox artifacts ###
 .agents/
 ~/
+
+.gemini/
+gha-creds-*.json

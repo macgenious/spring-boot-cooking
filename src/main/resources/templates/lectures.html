@@ -3,50 +3,54 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Browse lectures in a ChefPath cooking unit." />
+  <meta name="description" content="ChefPath — Browse lectures in this cooking unit." />
   <title>Unit — ChefPath</title>
   <link rel="stylesheet" th:href="@{/css/design-system.css}" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
 <body>
 
-  <!-- Loading Overlay -->
   <div id="loading-overlay" class="loading-overlay">
     <div class="spinner"></div>
   </div>
 
-  <!-- Top Navigation Bar -->
-  <nav class="top-bar">
-    <a href="/dashboard" class="top-bar__brand">
-      <span class="top-bar__brand-icon">👨‍🍳</span>
-      ChefPath
-    </a>
-    <div class="top-bar__right">
-      <button class="btn btn-ghost" onclick="Auth.signOut()" title="Sign out">
-        <span class="material-symbols-outlined">logout</span>
-      </button>
-    </div>
-  </nav>
+  <div class="page-wrap">
 
-  <main class="dashboard">
-    <!-- Back link + unit title -->
-    <div class="lecture-header animate-in">
-      <a href="/dashboard" class="lecture-header__back">
-        <span class="material-symbols-outlined">arrow_back</span>
-      </a>
-      <div class="lecture-header__info">
-        <h1 id="unit-title" style="font-size:1.4rem;">Loading…</h1>
+    <!-- Nav -->
+    <header>
+      <div class="nav">
+        <a href="/dashboard" class="nav__logo">
+          <span class="nav__logo-icon">👨‍🍳</span>
+          ChefPath
+        </a>
+        <div class="nav__right">
+          <button class="nav__sign-out" onclick="Auth.signOut()">Sign out</button>
+        </div>
       </div>
-    </div>
+    </header>
 
-    <!-- Lecture List -->
-    <div id="lectures-list" class="dashboard__units" style="margin-top:var(--space-lg);">
-      <!-- Populated by JavaScript -->
-    </div>
-  </main>
+    <main>
+      <div class="container">
+
+        <a href="/dashboard" class="back-link">← All units</a>
+
+        <div class="page-header">
+          <h1 class="page-title" id="unit-title">Unit</h1>
+          <p class="page-subtitle" id="unit-description"></p>
+        </div>
+
+        <div id="lectures-list">
+          <!-- populated by JS -->
+        </div>
+
+        <div style="height: 48px;"></div>
+
+      </div>
+    </main>
+
+  </div>
 
   <script th:inline="javascript">
-    window.__SUPABASE_URL__ = /*[[${supabaseUrl}]]*/ '';
+    window.__SUPABASE_URL__      = /*[[${supabaseUrl}]]*/ '';
     window.__SUPABASE_ANON_KEY__ = /*[[${supabaseAnonKey}]]*/ '';
   </script>
   <script th:src="@{/js/supabase-auth.js}"></script>

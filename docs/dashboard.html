@@ -3,77 +3,84 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Your cooking journey dashboard — track progress, streaks, and explore 10 culinary units." />
+  <meta name="description" content="ChefPath Dashboard — your cooking curriculum overview and progress tracker." />
   <title>Dashboard — ChefPath</title>
   <link rel="stylesheet" href="./css/design-system.css" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
 <body>
 
-  <!-- Loading Overlay -->
   <div id="loading-overlay" class="loading-overlay">
     <div class="spinner"></div>
   </div>
 
-  <!-- Top Navigation Bar -->
-  <nav class="top-bar">
-    <a href="./dashboard.html" class="top-bar__brand">
-      <span class="top-bar__brand-icon">👨‍🍳</span>
-      ChefPath
-    </a>
-    <div class="top-bar__right">
-      <div class="streak-badge">
-        <span class="streak-badge__fire">🔥</span>
-        <span id="streak-count">0 day streak</span>
-      </div>
-      <button class="btn btn-ghost" onclick="Auth.signOut()" title="Sign out">
-        <span class="material-symbols-outlined">logout</span>
-      </button>
-    </div>
-  </nav>
+  <div class="page-wrap">
 
-  <!-- Dashboard Content -->
-  <main class="dashboard">
-    <!-- Progress Ring Hero -->
-    <section class="dashboard__hero animate-in">
-      <p class="dashboard__hero-label">Your Cooking Journey</p>
-      <div class="progress-ring" style="width:200px; height:200px;">
-        <svg width="200" height="200" viewBox="0 0 200 200">
-          <defs>
-            <linearGradient id="ember-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#ff906a" />
-              <stop offset="100%" stop-color="#f7652f" />
-            </linearGradient>
-          </defs>
-          <circle class="progress-ring__track" cx="100" cy="100" r="85" />
-          <circle id="progress-ring-fill" class="progress-ring__fill" cx="100" cy="100" r="85"
-                  stroke-dasharray="534" stroke-dashoffset="534" />
-        </svg>
-        <div class="progress-ring__text">
-          <span id="progress-ring-value" class="progress-ring__percentage ember-text">0%</span>
-          <span class="progress-ring__label">Complete</span>
+    <!-- Nav -->
+    <header>
+      <div class="nav">
+        <a href="./dashboard.html" class="nav__logo">
+          <span class="nav__logo-icon">👨‍🍳</span>
+          ChefPath
+        </a>
+        <nav class="nav__links">
+          <a href="./dashboard.html" class="nav__link">Curriculum</a>
+        </nav>
+        <div class="nav__actions">
+          <button class="nav__sign-out" onclick="Auth.signOut()">Sign out</button>
         </div>
       </div>
-    </section>
+    </header>
 
-    <!-- Units List -->
-    <section>
-      <h2 class="dashboard__section-title animate-in animate-in-delay-1">
-        <span class="material-symbols-outlined" style="color:var(--primary);">menu_book</span>
-        Culinary Courses
-      </h2>
-      <div id="units-list" class="dashboard__units">
-        <!-- Populated by JavaScript -->
+    <main>
+      <div class="container">
+
+        <!-- Page header -->
+        <div class="page-header">
+          <h1 class="page-header__title">Your Curriculum</h1>
+          <p class="page-header__subtitle">20 units · 100 lectures · Master the art of cooking</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+          <div class="stat">
+            <span class="stat__value" id="progress-val">0%</span>
+            <span class="stat__label">complete</span>
+          </div>
+          <div class="stat__divider"></div>
+          <div class="stat">
+            <span class="stat__value" id="streak-val">0</span>
+            <span class="stat__label">day streak</span>
+          </div>
+          <div class="stat__divider"></div>
+          <div class="stat">
+            <span class="stat__value" id="completed-val">0</span>
+            <span class="stat__label">lectures done</span>
+          </div>
+        </div>
+
+        <!-- Progress bar -->
+        <div style="margin-bottom: var(--space-xl);">
+          <div class="progress-bar" style="height:2px;">
+            <div class="progress-bar__fill" id="progress-fill" style="width:0%"></div>
+          </div>
+        </div>
+
+        <!-- Units list -->
+        <p class="section-heading">All Units</p>
+        <div class="units-grid" id="units-list">
+          <!-- populated by JS -->
+        </div>
+
       </div>
-    </section>
-  </main>
+    </main>
+
+  </div>
 
   <script src="./js/config.js"></script>
   <script src="./js/supabase-auth.js"></script>
   <script src="./js/app.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', initDashboard);
+    initDashboard();
   </script>
 </body>
 </html>
-

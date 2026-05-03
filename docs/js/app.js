@@ -1,6 +1,5 @@
 /**
  * ChefPath — Application Logic
- *
  * Handles fetching lectures, units, user progress, and navigation
  * by calling the Spring Boot REST API with the Supabase JWT.
  */
@@ -40,7 +39,7 @@ function showToast(message, type = 'success') {
     toast.id = 'app-toast';
     document.body.appendChild(toast);
   }
-  toast.className = `toast toast--${type}`;
+  toast.className = `toast ${type === 'error' ? 'toast--error' : ''}`;
   toast.textContent = message;
 
   requestAnimationFrame(() => {
@@ -60,23 +59,30 @@ function showLoading() {
   if (el) el.classList.remove('hidden');
 }
 
-// ---- Progress Ring helper ----
-function setProgressRing(percentage) {
-  const circle = document.getElementById('progress-ring-fill');
-  const text = document.getElementById('progress-ring-value');
-  if (!circle || !text) return;
-
-  const radius = circle.r.baseVal.value;
-  const circumference = 2 * Math.PI * radius;
-  circle.style.strokeDasharray = circumference;
-  circle.style.strokeDashoffset = circumference - (percentage / 100) * circumference;
-  text.textContent = `${percentage}%`;
-}
-
-// ---- UNIT ICONS (cooking themed) ----
-const UNIT_ICONS = [
-  '🔪', '🍲', '🥩', '🫕', '🍞',
-  '🎨', '🥚', '🔥', '🐟', '🧁'
+// ============================================================
+//  CURRICULUM DATA  (fallback titles / descriptions)
+// ============================================================
+const UNIT_DATA = [
+  { title: 'Errores Básicos y Utensilios de Cocina',       desc: 'Domina los fundamentos: evita errores comunes y equipa tu cocina.' },
+  { title: 'Técnicas de Corte y Manejo de Cuchillo',       desc: 'Cortes con precisión: juliana, brunoise, mirepoix y despiece de aves.' },
+  { title: 'Técnicas de Cocción y Tipos de Fuego',          desc: 'Métodos de cocción, tipos de fuego y puntos de temperatura exactos.' },
+  { title: 'Almacenamiento y Conservación de Alimentos',   desc: 'Fermentación, envasado al vacío y conservación segura.' },
+  { title: 'Cereales I: Arroz',                             desc: 'Onigiri, paella, arroz frito, biryani y todas las formas del arroz.' },
+  { title: 'Proteínas I: Carnes',                           desc: 'Guisos, estofados, empanados y el punto perfecto de la carne.' },
+  { title: 'Proteínas II: Aves',                            desc: 'Desde el pavo asado hasta el pollo frito internacional.' },
+  { title: 'Vegetales y Legumbres',                         desc: 'Verduras y legumbres con técnicas de restaurante.' },
+  { title: 'Panadería',                                     desc: 'Panes artesanales, brioche y croissants como un maestro panadero.' },
+  { title: 'Cereales II: Pasta',                            desc: 'Mantecatura perfecta y recetas clásicas italianas.' },
+  { title: 'Salsas Madre',                                  desc: 'Las 5 salsas madre francesas, salsas del mundo y especias esenciales.' },
+  { title: 'Proteínas III: Pescados',                       desc: 'Vapor, plancha, crudo y horno para texturas perfectas.' },
+  { title: 'Platos Sencillos',                              desc: 'Cenas rápidas y tuppers sabrosos en menos de 15 minutos.' },
+  { title: 'Repostería I: Dulces',                          desc: 'Bizcochos, cookies, postres de restaurante y pastelería profesional.' },
+  { title: 'Repostería II: Aperitivos Salados',             desc: 'Croquetas, tequeños, aros de cebolla y snacks irresistibles.' },
+  { title: 'Ensaladas',                                     desc: 'Ensaladas como platos principales con técnica internacional.' },
+  { title: 'Cocina Europea: Española, Italiana, Francesa', desc: 'Cocido, risotto, sopa de cebolla y platos clásicos europeos.' },
+  { title: 'Cocina Americana: Cubana, Mexicana, Peruana',  desc: 'Tacos, quesadillas, bocadillo cubano y lo mejor de América Latina.' },
+  { title: 'Cocina Asiática: China, Coreana, Japonesa',    desc: 'Pad Thai, curry verde, carta china y cocina japonesa completa.' },
+  { title: 'Cocina Rara: De Todas Partes',                  desc: 'Kebab casero, poke bowls, baklava, restaurante indio y samosas.' }
 ];
 
 // ============================================================
@@ -87,71 +93,54 @@ async function initDashboard() {
 
   try {
     const userId = Session.getUserId();
+
+    // fetch progress and all unit lecture counts concurrently
     const [progress, ...unitLectures] = await Promise.all([
       apiFetch(`/users/${userId}/progress`),
-      ...Array.from({ length: 10 }, (_, i) => apiFetch(`/lectures/unit/${i + 1}`))
+      ...Array.from({ length: 20 }, (_, i) => apiFetch(`/lectures/unit/${i + 1}`))
     ]);
 
-    // Set progress ring
-    setProgressRing(progress.progressPercentage || 0);
+    const pct = progress.progressPercentage || 0;
+    const streak = progress.streakCount || 0;
+    const completed = Math.round((pct / 100) * 100); // 1% per lecture = N lectures done
 
-    // Set streak
-    const streakEl = document.getElementById('streak-count');
-    if (streakEl) streakEl.textContent = `${progress.streakCount || 0} day streak`;
+    // Update stat row
+    setText('progress-val', `${pct}%`);
+    setText('streak-val', `${streak}`);
+    setText('completed-val', `${completed}`);
+
+    // Update progress bar
+    const fill = document.getElementById('progress-fill');
+    if (fill) fill.style.width = `${pct}%`;
 
     // Render unit cards
     const container = document.getElementById('units-list');
     if (!container) return;
     container.innerHTML = '';
 
-    const unitTitles = [
-      'Knife Skills Fundamentals',
-      'The Science of Stock',
-      'Roasting & Maillard Reaction',
-      'Saucier Mastery: Mother Sauces',
-      'Hydration & Gluten Structure',
-      'Plating & Aesthetic Presentation',
-      'Egg Mastery',
-      'Wood-Fire & Smoke Chemistry',
-      'Ocean to Table: Fish Butchery',
-      'Modern Pastry Foundations'
-    ];
-
-    const unitDescriptions = [
-      'Master the grip, the rock, and the dice of essential vegetables.',
-      'Unlocking depth and umami through bone-roasting and slow-simmering.',
-      'Understanding heat transfer and achieving the perfect golden crust.',
-      'The secrets of Béchamel, Velouté, Espagnole, Hollandaise, and Tomato.',
-      'The molecular biology of artisanal bread baking.',
-      'Turning meals into art with height, negative space, and color.',
-      'From the perfect soft-scramble to the legendary French omelette.',
-      'Controlling combustion and flavor absorption.',
-      'Sustainability and precision filleting techniques.',
-      'Mousses, gels, and the architecture of desserts.'
-    ];
-
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 20; i++) {
       const lectures = unitLectures[i] || [];
-      const completedCount = 0; // would come from completed_lectures
-      const totalCount = lectures.length || 10;
-      const pct = Math.round((completedCount / totalCount) * 100);
+      const totalCount = lectures.length || 5;
+      const unit = UNIT_DATA[i];
 
       const card = document.createElement('a');
       card.href = `${AppRoutes.lectures}?unitId=${i + 1}`;
-      card.className = `unit-card animate-in animate-in-delay-${Math.min(i % 5, 4) + 1}`;
+      card.className = 'unit-card';
       card.innerHTML = `
-        <div class="unit-card__icon">${UNIT_ICONS[i]}</div>
+        <span class="unit-card__num">${String(i + 1).padStart(2, '0')}</span>
         <div class="unit-card__content">
-          <div class="unit-card__title">${unitTitles[i]}</div>
-          <div class="unit-card__description">${unitDescriptions[i]}</div>
+          <div class="unit-card__title">${unit.title}</div>
+          <div class="unit-card__description">${unit.desc}</div>
           <div class="unit-card__meta">
-            <div class="progress-bar" style="max-width:180px;">
-              <div class="progress-bar__fill" style="width:${pct}%"></div>
+            <div class="unit-card__progress">
+              <div class="progress-bar" style="max-width:160px; height:2px;">
+                <div class="progress-bar__fill" style="width:0%"></div>
+              </div>
             </div>
-            <span>${completedCount}/${totalCount} lectures</span>
+            <span class="unit-card__progress-text">0 / ${totalCount}</span>
           </div>
         </div>
-        <span class="unit-card__chevron material-symbols-outlined">chevron_right</span>
+        <span class="unit-card__arrow">›</span>
       `;
       container.appendChild(card);
     }
@@ -164,13 +153,22 @@ async function initDashboard() {
 }
 
 // ============================================================
-//  LECTURE LIST PAGE (for a specific unit)
+//  LECTURE LIST PAGE
 // ============================================================
 async function initLectureList() {
   if (!Auth.requireAuth()) return;
 
   const params = new URLSearchParams(window.location.search);
-  const unitId = params.get('unitId') || '1';
+  const unitId = parseInt(params.get('unitId') || '1', 10);
+  const unitIndex = unitId - 1;
+
+  // Set page title from local data immediately
+  const unit = UNIT_DATA[unitIndex] || { title: `Unit ${unitId}`, desc: '' };
+  setText('unit-title', unit.title);
+  setText('unit-description', unit.desc);
+
+  // Update document title
+  document.title = `${unit.title} — ChefPath`;
 
   try {
     const lectures = await apiFetch(`/lectures/unit/${unitId}`);
@@ -178,33 +176,19 @@ async function initLectureList() {
     if (!container) return;
     container.innerHTML = '';
 
-    const unitTitle = document.getElementById('unit-title');
-    if (unitTitle) {
-      const titles = [
-        'Knife Skills Fundamentals', 'The Science of Stock',
-        'Roasting & Maillard Reaction', 'Saucier Mastery: Mother Sauces',
-        'Hydration & Gluten Structure', 'Plating & Aesthetic Presentation',
-        'Egg Mastery', 'Wood-Fire & Smoke Chemistry',
-        'Ocean to Table: Fish Butchery', 'Modern Pastry Foundations'
-      ];
-      unitTitle.textContent = titles[parseInt(unitId) - 1] || `Unit ${unitId}`;
-    }
-
     lectures.forEach((lec, idx) => {
-      const card = document.createElement('a');
-      card.href = `${AppRoutes.lecture}?id=${lec.id}`;
-      card.className = `unit-card animate-in animate-in-delay-${Math.min(idx % 5, 4) + 1}`;
-      card.innerHTML = `
-        <div class="unit-card__icon" style="font-size:1.1rem; font-family:var(--font-display); font-weight:800;">
-          ${idx + 1}
+      const item = document.createElement('a');
+      item.href = `${AppRoutes.lecture}?id=${lec.id}`;
+      item.className = 'lecture-item';
+      item.innerHTML = `
+        <span class="lecture-item__num">${String(idx + 1).padStart(2, '0')}</span>
+        <div class="lecture-item__content">
+          <div class="lecture-item__title">${lec.title}</div>
+          ${lec.description ? `<div class="lecture-item__desc">${lec.description}</div>` : ''}
         </div>
-        <div class="unit-card__content">
-          <div class="unit-card__title">${lec.title}</div>
-          <div class="unit-card__description">${lec.description || ''}</div>
-        </div>
-        <span class="unit-card__chevron material-symbols-outlined">chevron_right</span>
+        <span class="lecture-item__arrow">›</span>
       `;
-      container.appendChild(card);
+      container.appendChild(item);
     });
   } catch (err) {
     console.error('Lecture list error:', err);
@@ -233,11 +217,31 @@ async function initLectureDetail() {
     const lecture = await apiFetch(`/lectures/${lectureId}`);
     currentLecture = lecture;
 
-    // Populate fields
+    const unitIndex = (lecture.unitId || 1) - 1;
+    const unitData = UNIT_DATA[unitIndex] || { title: `Unit ${lecture.unitId}` };
+
+    // Document title
+    document.title = `${lecture.title} — ChefPath`;
+
+    // Breadcrumb
+    const unitLink = document.getElementById('breadcrumb-unit-link');
+    if (unitLink) {
+      unitLink.textContent = unitData.title;
+      unitLink.href = `${AppRoutes.lectures}?unitId=${lecture.unitId}`;
+    }
+    setText('breadcrumb-lecture-num', `Lecture ${lecture.sortOrder}`);
+
+    // Tags
+    setText('lecture-unit-tag', `Unit ${lecture.unitId}`);
+    setText('lecture-num-tag', `Lecture ${lecture.sortOrder} of 5`);
+
+    // Title & description
     setText('lecture-title', lecture.title);
-    setText('lecture-description', lecture.description || '');
-    setText('lecture-unit-title', `Unit ${lecture.unitId}`);
-    setText('lecture-num', `Lecture ${lecture.sortOrder} of 10`);
+    const descEl = document.getElementById('lecture-description');
+    if (descEl) {
+      descEl.textContent = lecture.description || '';
+      if (!lecture.description) descEl.style.display = 'none';
+    }
 
     // YouTube embed
     const videoContainer = document.getElementById('video-container');
@@ -251,13 +255,13 @@ async function initLectureDetail() {
             allowfullscreen
             loading="lazy"
           ></iframe>`;
+      } else {
+        videoContainer.innerHTML = `
+          <div class="video-placeholder">
+            <span class="video-placeholder__icon">▶</span>
+            <span class="video-placeholder__text">Video not available</span>
+          </div>`;
       }
-    }
-
-    // Lecture image
-    const imgContainer = document.getElementById('lecture-image');
-    if (imgContainer && lecture.imagePath) {
-      imgContainer.innerHTML = `<img src="${lecture.imagePath}" alt="${lecture.title}" />`;
     }
   } catch (err) {
     console.error('Lecture detail error:', err);
@@ -270,18 +274,21 @@ async function initLectureDetail() {
 async function completeLecture() {
   if (!currentLecture) return;
   const userId = Session.getUserId();
+  const btn = document.getElementById('btn-complete');
+  if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
 
   try {
     showLoading();
-    const updated = await apiFetch(`/lectures/${currentLecture.id}/complete`, {
+    await apiFetch(`/lectures/${currentLecture.id}/complete`, {
       method: 'POST',
       body: JSON.stringify({ userId })
     });
-    showToast('🎉 Lecture completed! +1%');
-    // Move to next lecture if available
-    setTimeout(() => navigateNext(), 800);
+    showToast('🎉 Lecture complete! +1%');
+    if (btn) { btn.textContent = '✓ Completed'; }
+    setTimeout(() => navigateNext(), 900);
   } catch (err) {
     showToast(err.message, 'error');
+    if (btn) { btn.disabled = false; btn.textContent = 'Mark as complete'; }
   } finally {
     hideLoading();
   }

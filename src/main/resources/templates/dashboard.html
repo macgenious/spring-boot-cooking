@@ -3,73 +3,66 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Your cooking journey dashboard — track progress, streaks, and explore 10 culinary units." />
+  <meta name="description" content="ChefPath Dashboard — explore your cooking curriculum." />
   <title>Dashboard — ChefPath</title>
   <link rel="stylesheet" th:href="@{/css/design-system.css}" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 </head>
 <body>
 
-  <!-- Loading Overlay -->
   <div id="loading-overlay" class="loading-overlay">
     <div class="spinner"></div>
   </div>
 
-  <!-- Top Navigation Bar -->
-  <nav class="top-bar">
-    <a href="/dashboard" class="top-bar__brand">
-      <span class="top-bar__brand-icon">👨‍🍳</span>
-      ChefPath
-    </a>
-    <div class="top-bar__right">
-      <div class="streak-badge">
-        <span class="streak-badge__fire">🔥</span>
-        <span id="streak-count">0 day streak</span>
+  <!-- ── Navigation ──────────────────────────────── -->
+  <nav class="topnav">
+    <div class="topnav__inner">
+      <a href="/dashboard" class="topnav__logo">
+        <span class="topnav__logo-icon">🍴</span>
+        ChefPath
+      </a>
+      <div class="topnav__right">
+        <span class="streak-pill" id="streak-pill">
+          <span class="streak-pill__fire">🔥</span>
+          <span id="streak-val">0 day streak</span>
+        </span>
+        <a href="/profile" class="profile-pill">
+          <span class="profile-pill__icon">👤</span>
+          <span id="user-name">Profile</span>
+        </a>
       </div>
-      <button class="btn btn-ghost" onclick="Auth.signOut()" title="Sign out">
-        <span class="material-symbols-outlined">logout</span>
-      </button>
     </div>
   </nav>
 
-  <!-- Dashboard Content -->
-  <main class="dashboard">
-    <!-- Progress Ring Hero -->
-    <section class="dashboard__hero animate-in">
-      <p class="dashboard__hero-label">Your Cooking Journey</p>
-      <div class="progress-ring" style="width:200px; height:200px;">
-        <svg width="200" height="200" viewBox="0 0 200 200">
-          <defs>
-            <linearGradient id="ember-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#ff906a" />
-              <stop offset="100%" stop-color="#f7652f" />
-            </linearGradient>
-          </defs>
-          <circle class="progress-ring__track" cx="100" cy="100" r="85" />
-          <circle id="progress-ring-fill" class="progress-ring__fill" cx="100" cy="100" r="85"
-                  stroke-dasharray="534" stroke-dashoffset="534" />
-        </svg>
-        <div class="progress-ring__text">
-          <span id="progress-ring-value" class="progress-ring__percentage ember-text">0%</span>
-          <span class="progress-ring__label">Complete</span>
-        </div>
-      </div>
-    </section>
+  <!-- ── Hero: Fact Carousel ─────────────────────── -->
+  <section class="hero-section" id="hero">
+    <div class="hero-section__fork">🍴</div>
 
-    <!-- Units List -->
-    <section>
-      <h2 class="dashboard__section-title animate-in animate-in-delay-1">
-        <span class="material-symbols-outlined" style="color:var(--primary);">menu_book</span>
-        Culinary Courses
-      </h2>
-      <div id="units-list" class="dashboard__units">
-        <!-- Populated by JavaScript -->
+    <div class="carousel-wrap">
+      <!-- Slides populated by JS -->
+      <div class="carousel-track" id="carousel-track"></div>
+      <div class="carousel-dots" id="carousel-dots"></div>
+    </div>
+
+    <button class="scroll-arrow-btn" onclick="document.getElementById('units').scrollIntoView({behavior:'smooth'})"
+            aria-label="Scroll to course units">↓</button>
+  </section>
+
+  <!-- ── Course Units ─────────────────────────────── -->
+  <section class="units-section" id="units">
+    <h2 class="units-section__title">Course Units</h2>
+    <div class="units-scroll-wrap">
+      <div class="units-row" id="units-row">
+        <!-- populated by JS -->
       </div>
-    </section>
-  </main>
+    </div>
+    <div class="units-nav">
+      <button class="units-nav__btn" id="units-prev" onclick="scrollUnits(-1)">‹</button>
+      <button class="units-nav__btn" id="units-next" onclick="scrollUnits(1)">›</button>
+    </div>
+  </section>
 
   <script th:inline="javascript">
-    window.__SUPABASE_URL__ = /*[[${supabaseUrl}]]*/ '';
+    window.__SUPABASE_URL__      = /*[[${supabaseUrl}]]*/ '';
     window.__SUPABASE_ANON_KEY__ = /*[[${supabaseAnonKey}]]*/ '';
   </script>
   <script th:src="@{/js/supabase-auth.js}"></script>
