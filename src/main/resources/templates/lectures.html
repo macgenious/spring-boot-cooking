@@ -1,53 +1,53 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="ChefPath — Browse lectures in this cooking unit." />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="ChefPath — Unit lectures."/>
   <title>Unit — ChefPath</title>
-  <link rel="stylesheet" th:href="@{/css/design-system.css}" />
+  <link rel="stylesheet" th:href="@{/css/design-system.css}"/>
 </head>
 <body>
+  <div id="loading-overlay" class="loading-overlay"><div class="spinner"></div></div>
 
-  <div id="loading-overlay" class="loading-overlay">
-    <div class="spinner"></div>
-  </div>
-
-  <div class="page-wrap">
-
-    <!-- Nav -->
-    <header>
-      <div class="nav">
-        <a href="/dashboard" class="nav__logo">
-          <span class="nav__logo-icon">👨‍🍳</span>
-          ChefPath
-        </a>
-        <div class="nav__right">
-          <button class="nav__sign-out" onclick="Auth.signOut()">Sign out</button>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="navbar__inner">
+      <a href="/dashboard" class="navbar__logo">
+        <span class="navbar__logo-icon">👨‍🍳</span> ChefPath
+      </a>
+      <div class="navbar__right">
+        <div class="streak-badge">
+          <span class="streak-badge__icon">🔥</span>
+          <span id="streak-label">0 day streak</span>
+        </div>
+        <div class="profile-menu">
+          <button class="profile-btn" onclick="toggleProfileMenu()">
+            <div class="profile-btn__avatar">👤</div>
+            <span>Profile</span>
+            <span style="font-size:10px;color:var(--faint);">▾</span>
+          </button>
+          <div class="profile-dropdown" id="profile-dropdown">
+            <button class="profile-dropdown__item profile-dropdown__item--danger" onclick="Auth.signOut()">Sign out</button>
+          </div>
         </div>
       </div>
-    </header>
+    </div>
+  </nav>
 
-    <main>
-      <div class="container">
-
-        <a href="/dashboard" class="back-link">← All units</a>
-
-        <div class="page-header">
-          <h1 class="page-title" id="unit-title">Unit</h1>
-          <p class="page-subtitle" id="unit-description"></p>
-        </div>
-
-        <div id="lectures-list">
-          <!-- populated by JS -->
-        </div>
-
-        <div style="height: 48px;"></div>
-
+  <main>
+    <div class="container unit-page">
+      <div class="unit-page__header">
+        <a href="/dashboard#units-section" class="back-link">← Back to curriculum</a>
+        <h1 class="unit-page__title" id="unit-title">Loading…</h1>
+        <p class="unit-page__meta" id="unit-meta"></p>
       </div>
-    </main>
 
-  </div>
+      <div class="lessons-list" id="lessons-list">
+        <!-- populated by JS -->
+      </div>
+    </div>
+  </main>
 
   <script th:inline="javascript">
     window.__SUPABASE_URL__      = /*[[${supabaseUrl}]]*/ '';
@@ -56,6 +56,15 @@
   <script th:src="@{/js/supabase-auth.js}"></script>
   <script th:src="@{/js/app.js}"></script>
   <script>
+    function toggleProfileMenu() {
+      document.getElementById('profile-dropdown').classList.toggle('open');
+    }
+    document.addEventListener('click', function(e) {
+      const pm = document.querySelector('.profile-menu');
+      if (pm && !pm.contains(e.target)) {
+        document.getElementById('profile-dropdown').classList.remove('open');
+      }
+    });
     document.addEventListener('DOMContentLoaded', initLectureList);
   </script>
 </body>

@@ -1,79 +1,63 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="ChefPath — Lecture detail and video player." />
-  <title>Lecture — ChefPath</title>
-  <link rel="stylesheet" th:href="@{/css/design-system.css}" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="ChefPath — Lesson detail."/>
+  <title>Lesson — ChefPath</title>
+  <link rel="stylesheet" th:href="@{/css/design-system.css}"/>
 </head>
 <body>
+  <div id="loading-overlay" class="loading-overlay"><div class="spinner"></div></div>
 
-  <div id="loading-overlay" class="loading-overlay">
-    <div class="spinner"></div>
-  </div>
-
-  <div class="page-wrap">
-
-    <!-- Nav -->
-    <header>
-      <div class="nav">
-        <a href="/dashboard" class="nav__logo">
-          <span class="nav__logo-icon">👨‍🍳</span>
-          ChefPath
-        </a>
-        <div class="nav__right">
-          <button class="nav__sign-out" onclick="Auth.signOut()">Sign out</button>
+  <nav class="navbar">
+    <div class="navbar__inner">
+      <a href="/dashboard" class="navbar__logo">
+        <span class="navbar__logo-icon">👨‍🍳</span> ChefPath
+      </a>
+      <div class="navbar__right">
+        <div class="streak-badge">
+          <span class="streak-badge__icon">🔥</span>
+          <span id="streak-label">0 day streak</span>
         </div>
-      </div>
-    </header>
-
-    <main>
-      <div class="container lecture-detail">
-
-        <!-- Breadcrumb -->
-        <div class="breadcrumb">
-          <a href="/dashboard">Curriculum</a>
-          <span class="breadcrumb__sep">›</span>
-          <a href="#" id="breadcrumb-unit-link">Unit</a>
-          <span class="breadcrumb__sep">›</span>
-          <span id="breadcrumb-num">Lecture</span>
-        </div>
-
-        <!-- Tags -->
-        <div class="lecture-tags">
-          <span class="tag tag--outline" id="lecture-unit-tag">Unit 1</span>
-          <span class="tag tag--outline" id="lecture-num-tag">Lecture 1</span>
-        </div>
-
-        <!-- Title -->
-        <h1 class="lecture-title" id="lecture-title">Loading…</h1>
-
-        <!-- Video -->
-        <div class="video-container" id="video-container">
-          <div class="video-placeholder">
-            <span class="video-placeholder__icon">▶</span>
-            <span>Loading video…</span>
+        <div class="profile-menu">
+          <button class="profile-btn" onclick="toggleProfileMenu()">
+            <div class="profile-btn__avatar">👤</div>
+            <span>Profile</span>
+            <span style="font-size:10px;color:var(--faint);">▾</span>
+          </button>
+          <div class="profile-dropdown" id="profile-dropdown">
+            <button class="profile-dropdown__item profile-dropdown__item--danger" onclick="Auth.signOut()">Sign out</button>
           </div>
         </div>
-
-        <!-- Description -->
-        <div class="lecture-desc-block" id="lecture-description"></div>
-
-        <!-- Actions -->
-        <div class="lecture-actions">
-          <button class="btn btn-ghost" onclick="navigatePrevious()">← Previous</button>
-          <div class="lecture-actions__spacer"></div>
-          <button class="btn btn-secondary" id="btn-complete" onclick="completeLecture()">
-            Mark as complete
-          </button>
-          <button class="btn btn-primary" onclick="navigateNext()">Next →</button>
-        </div>
-
       </div>
-    </main>
+    </div>
+  </nav>
 
-  </div>
+  <main>
+    <div class="container unit-page">
+      <div class="unit-page__header">
+        <a href="#" id="back-link" class="back-link">← Back to unit</a>
+        <h1 class="unit-page__title" id="lecture-title">Loading…</h1>
+        <p class="unit-page__meta" id="lecture-meta"></p>
+      </div>
+
+      <div id="video-container" class="lesson-card__video" style="margin-bottom:var(--sp-xl);">
+        <div class="lesson-card__video-placeholder">
+          <span class="lesson-card__video-placeholder-icon">▶</span>
+          <span>Loading…</span>
+        </div>
+      </div>
+
+      <p id="lecture-description" class="lesson-card__desc-full"></p>
+
+      <div class="lesson-card__actions" style="margin-top:var(--sp-xl); justify-content:space-between; display:flex; gap:var(--sp-sm);">
+        <button class="btn btn-outline" onclick="navigatePrevious()">← Previous</button>
+        <button class="btn btn-black" id="btn-complete" onclick="completeLecture()">Mark as done</button>
+        <button class="btn btn-outline" onclick="navigateNext()">Next →</button>
+      </div>
+    </div>
+  </main>
 
   <script th:inline="javascript">
     window.__SUPABASE_URL__      = /*[[${supabaseUrl}]]*/ '';
@@ -82,6 +66,13 @@
   <script th:src="@{/js/supabase-auth.js}"></script>
   <script th:src="@{/js/app.js}"></script>
   <script>
+    function toggleProfileMenu() {
+      document.getElementById('profile-dropdown').classList.toggle('open');
+    }
+    document.addEventListener('click', function(e) {
+      const pm = document.querySelector('.profile-menu');
+      if (pm && !pm.contains(e.target)) document.getElementById('profile-dropdown').classList.remove('open');
+    });
     document.addEventListener('DOMContentLoaded', initLectureDetail);
   </script>
 </body>

@@ -1,63 +1,160 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="ChefPath Dashboard — explore your cooking curriculum." />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="ChefPath Dashboard — your cooking curriculum overview."/>
   <title>Dashboard — ChefPath</title>
-  <link rel="stylesheet" th:href="@{/css/design-system.css}" />
+  <link rel="stylesheet" th:href="@{/css/design-system.css}"/>
 </head>
 <body>
+  <div id="loading-overlay" class="loading-overlay"><div class="spinner"></div></div>
 
-  <div id="loading-overlay" class="loading-overlay">
-    <div class="spinner"></div>
-  </div>
-
-  <!-- ── Navigation ──────────────────────────────── -->
-  <nav class="topnav">
-    <div class="topnav__inner">
-      <a href="/dashboard" class="topnav__logo">
-        <span class="topnav__logo-icon">🍴</span>
-        ChefPath
+  <!-- ── NAVBAR ── -->
+  <nav class="navbar">
+    <div class="navbar__inner">
+      <a href="/dashboard" class="navbar__logo">
+        <span class="navbar__logo-icon">👨‍🍳</span> ChefPath
       </a>
-      <div class="topnav__right">
-        <span class="streak-pill" id="streak-pill">
-          <span class="streak-pill__fire">🔥</span>
-          <span id="streak-val">0 day streak</span>
-        </span>
-        <a href="/profile" class="profile-pill">
-          <span class="profile-pill__icon">👤</span>
-          <span id="user-name">Profile</span>
-        </a>
+      <div class="navbar__right">
+        <div class="streak-badge">
+          <span class="streak-badge__icon">🔥</span>
+          <span id="streak-label">0 day streak</span>
+        </div>
+        <div class="profile-menu">
+          <button class="profile-btn" id="profile-btn" onclick="toggleProfileMenu()">
+            <div class="profile-btn__avatar" id="avatar-el">👤</div>
+            <span id="user-email-short">Profile</span>
+            <span style="font-size:10px; color:var(--faint);">▾</span>
+          </button>
+          <div class="profile-dropdown" id="profile-dropdown">
+            <div class="profile-dropdown__item" style="font-size:12px; color:var(--faint); cursor:default;" id="dropdown-email">—</div>
+            <div class="profile-dropdown__divider"></div>
+            <button class="profile-dropdown__item profile-dropdown__item--danger" onclick="Auth.signOut()">Sign out</button>
+          </div>
+        </div>
       </div>
     </div>
   </nav>
 
-  <!-- ── Hero: Fact Carousel ─────────────────────── -->
-  <section class="hero-section" id="hero">
-    <div class="hero-section__fork">🍴</div>
+  <!-- ── HERO / CAROUSEL ── -->
+  <section class="hero-section" id="hero-section">
+    <div class="container" style="display:flex; flex-direction:column; align-items:center;">
+      <p class="hero-eyebrow">Your cooking journey</p>
+      <h1 class="hero-title">Did you know?</h1>
 
-    <div class="carousel-wrap">
-      <!-- Slides populated by JS -->
-      <div class="carousel-track" id="carousel-track"></div>
-      <div class="carousel-dots" id="carousel-dots"></div>
+      <!-- Carousel -->
+      <div class="carousel" role="region" aria-label="Food facts">
+        <div class="carousel__track-wrap">
+          <div class="carousel__track" id="carousel-track">
+
+            <div class="carousel__slide">
+              <div class="carousel__slide-img"><img src="/img/fact_1.jpg" alt="Honey" loading="lazy"/></div>
+              <div class="carousel__slide-body">
+                <span class="carousel__fact-num">Fact 01</span>
+                <p class="carousel__fact-text">Honey never spoils; archaeologists have found 3,000-year-old honey in Egyptian tombs that remains perfectly edible.</p>
+              </div>
+            </div>
+
+            <div class="carousel__slide">
+              <div class="carousel__slide-img"><img src="/img/fact_2.jpg" alt="Tomato" loading="lazy"/></div>
+              <div class="carousel__slide-body">
+                <span class="carousel__fact-num">Fact 02</span>
+                <p class="carousel__fact-text">Tomatoes are botanically fruits but legally treated as vegetables due to their savory flavor profile.</p>
+              </div>
+            </div>
+
+            <div class="carousel__slide">
+              <div class="carousel__slide-img"><img src="/img/fact_3.jpg" alt="Dark Chocolate" loading="lazy"/></div>
+              <div class="carousel__slide-body">
+                <span class="carousel__fact-num">Fact 03</span>
+                <p class="carousel__fact-text">Dark chocolate contains flavonoids — antioxidants that support cardiovascular health and improve blood flow.</p>
+              </div>
+            </div>
+
+            <div class="carousel__slide">
+              <div class="carousel__slide-img"><img src="/img/fact_4.jpg" alt="Banana" loading="lazy"/></div>
+              <div class="carousel__slide-body">
+                <span class="carousel__fact-num">Fact 04</span>
+                <p class="carousel__fact-text">Bananas emit trace radiation from potassium-40, but you'd need to eat millions at once for it to be harmful.</p>
+              </div>
+            </div>
+
+            <div class="carousel__slide">
+              <div class="carousel__slide-img"><img src="/img/fact_5.jpg" alt="Sea Salt" loading="lazy"/></div>
+              <div class="carousel__slide-body">
+                <span class="carousel__fact-num">Fact 05</span>
+                <p class="carousel__fact-text">Sea salt retains trace minerals like magnesium and calcium, giving it a richer, brinier flavor than table salt.</p>
+              </div>
+            </div>
+
+            <div class="carousel__slide">
+              <div class="carousel__slide-img"><img src="/img/fact_6.jpg" alt="Spice" loading="lazy"/></div>
+              <div class="carousel__slide-body">
+                <span class="carousel__fact-num">Fact 06</span>
+                <p class="carousel__fact-text">Capsaicin in spicy foods triggers heat receptors, prompting the brain to release endorphins — a natural high.</p>
+              </div>
+            </div>
+
+            <div class="carousel__slide">
+              <div class="carousel__slide-img"><img src="/img/fact_7.jpg" alt="Avocado" loading="lazy"/></div>
+              <div class="carousel__slide-body">
+                <span class="carousel__fact-num">Fact 07</span>
+                <p class="carousel__fact-text">Avocados are technically single-seeded berries packed with monounsaturated fats that lower bad cholesterol.</p>
+              </div>
+            </div>
+
+            <div class="carousel__slide">
+              <div class="carousel__slide-img"><img src="/img/fact_8.jpg" alt="Fermented foods" loading="lazy"/></div>
+              <div class="carousel__slide-body">
+                <span class="carousel__fact-num">Fact 08</span>
+                <p class="carousel__fact-text">Fermented foods like kimchi, kefir, and yogurt contain live probiotics that strengthen the gut microbiome.</p>
+              </div>
+            </div>
+
+            <div class="carousel__slide">
+              <div class="carousel__slide-img"><img src="/img/fact_9.jpg" alt="Umami" loading="lazy"/></div>
+              <div class="carousel__slide-body">
+                <span class="carousel__fact-num">Fact 09</span>
+                <p class="carousel__fact-text">Umami — the fifth basic taste — comes from glutamates found naturally in aged cheeses, mushrooms, and soy sauce.</p>
+              </div>
+            </div>
+
+            <div class="carousel__slide">
+              <div class="carousel__slide-img"><img src="/img/fact_10.jpg" alt="Carrot" loading="lazy"/></div>
+              <div class="carousel__slide-body">
+                <span class="carousel__fact-num">Fact 10</span>
+                <p class="carousel__fact-text">Carrots were originally purple or yellow; the orange variety was selectively bred by Dutch farmers in the 17th century.</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="carousel__controls">
+          <button class="carousel__btn" id="carousel-prev" aria-label="Previous">‹</button>
+          <div class="carousel__dots" id="carousel-dots"></div>
+          <button class="carousel__btn" id="carousel-next" aria-label="Next">›</button>
+        </div>
+      </div>
+
+      <!-- Scroll cue -->
+      <button class="scroll-cue" onclick="document.getElementById('units-section').scrollIntoView({behavior:'smooth'})" aria-label="Scroll to units">
+        <span class="scroll-cue__label">See your units</span>
+        <span class="scroll-cue__arrow">↓</span>
+      </button>
     </div>
-
-    <button class="scroll-arrow-btn" onclick="document.getElementById('units').scrollIntoView({behavior:'smooth'})"
-            aria-label="Scroll to course units">↓</button>
   </section>
 
-  <!-- ── Course Units ─────────────────────────────── -->
-  <section class="units-section" id="units">
-    <h2 class="units-section__title">Course Units</h2>
-    <div class="units-scroll-wrap">
-      <div class="units-row" id="units-row">
+  <!-- ── UNITS SECTION ── -->
+  <section class="units-section" id="units-section">
+    <div class="container">
+      <p class="section-eyebrow">Curriculum</p>
+      <h2 class="section-title">Your 20 Units</h2>
+      <div class="units-grid" id="units-grid">
         <!-- populated by JS -->
       </div>
-    </div>
-    <div class="units-nav">
-      <button class="units-nav__btn" id="units-prev" onclick="scrollUnits(-1)">‹</button>
-      <button class="units-nav__btn" id="units-next" onclick="scrollUnits(1)">›</button>
     </div>
   </section>
 
@@ -68,6 +165,54 @@
   <script th:src="@{/js/supabase-auth.js}"></script>
   <script th:src="@{/js/app.js}"></script>
   <script>
+    /* ── Profile dropdown ── */
+    function toggleProfileMenu() {
+      document.getElementById('profile-dropdown').classList.toggle('open');
+    }
+    document.addEventListener('click', function(e) {
+      const pm = document.querySelector('.profile-menu');
+      if (pm && !pm.contains(e.target)) {
+        document.getElementById('profile-dropdown').classList.remove('open');
+      }
+    });
+
+    /* ── Carousel ── */
+    (function() {
+      const track  = document.getElementById('carousel-track');
+      const dotsEl = document.getElementById('carousel-dots');
+      const slides = track.querySelectorAll('.carousel__slide');
+      const total  = slides.length;
+      let current  = 0, timer;
+
+      // Build dots
+      slides.forEach((_, i) => {
+        const d = document.createElement('button');
+        d.className = 'carousel__dot' + (i === 0 ? ' active' : '');
+        d.setAttribute('aria-label', 'Slide ' + (i + 1));
+        d.onclick = () => goTo(i);
+        dotsEl.appendChild(d);
+      });
+
+      function goTo(idx) {
+        current = (idx + total) % total;
+        track.style.transform = `translateX(-${current * 100}%)`;
+        dotsEl.querySelectorAll('.carousel__dot').forEach((d, i) => {
+          d.classList.toggle('active', i === current);
+        });
+        resetTimer();
+      }
+
+      function resetTimer() {
+        clearInterval(timer);
+        timer = setInterval(() => goTo(current + 1), 5000);
+      }
+
+      document.getElementById('carousel-prev').onclick = () => goTo(current - 1);
+      document.getElementById('carousel-next').onclick = () => goTo(current + 1);
+      resetTimer();
+    })();
+
+    /* ── Boot dashboard ── */
     document.addEventListener('DOMContentLoaded', initDashboard);
   </script>
 </body>
