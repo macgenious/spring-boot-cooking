@@ -154,7 +154,10 @@ public class EducationalService {
         List<Map<String, Object>> rows = parseJsonArray(json);
 
         if (rows == null || rows.isEmpty()) {
-            throw new ProgressUpdateException("User record not found for userId: " + userId);
+            // Auto-create the user row if it doesn't exist yet (e.g. new signup).
+            log.warn("user_not_found userId={} — auto-creating progress record", userId);
+            ensureUserRecord(userId, jwt);
+            return new UserProgressResponse(userId, 1L, 0, 0);
         }
 
         Map<String, Object> user = rows.getFirst();
@@ -164,6 +167,33 @@ public class EducationalService {
                 toInt(user.get("progress_percentage")),
                 toInt(user.get("streak_count"))
         );
+    }
+
+    /**
+     * Inserts a default progress row for a user if one does not already exist.
+     * Uses ON CONFLICT DO NOTHING so it is safe to call multiple times.
+     */
+    private void ensureUserRecord(String userId, String jwt) {
+        try {
+            String body = objectMapper.writeValueAsString(Map.of(
+                    "id", userId,
+                    "email", "",
+                    "current_lesson_id", 1,
+                    "progress_percentage", 0,
+                    "streak_count", 0
+            ));
+            supabaseWebClient.post()
+                    .uri("/users")
+                    .header("Authorization", "Bearer " + jwt)
+                    .header("Prefer", "resolution=ignore-duplicates")
+                    .bodyValue(body)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+            log.info("auto_created_user_record userId={}", userId);
+        } catch (JsonProcessingException e) {
+            throw new ProgressUpdateException("Failed to auto-create user record", e);
+        }
     }
 
     // ------------------------------------------------------------------ 

@@ -10,7 +10,7 @@
 <body>
   <div id="loading-overlay" class="loading-overlay"><div class="spinner"></div></div>
 
-  <!-- NAVBAR -->
+  <!-- TOP NAVBAR -->
   <nav class="navbar">
     <div class="navbar__inner">
       <a href="/dashboard" class="navbar__logo">
@@ -35,19 +35,36 @@
     </div>
   </nav>
 
+  <!-- MAIN CONTENT -->
   <main>
     <div class="container unit-page">
       <div class="unit-page__header">
         <a href="/dashboard#units-section" class="back-link">← Back to curriculum</a>
         <h1 class="unit-page__title" id="unit-title">Loading…</h1>
+        <p class="unit-page__subtitle" id="unit-subtitle"></p>
         <p class="unit-page__meta" id="unit-meta"></p>
       </div>
-
       <div class="lessons-list" id="lessons-list">
-        <!-- populated by JS -->
+        <!-- populated by app.js -->
       </div>
     </div>
   </main>
+
+  <!-- FOOTER UNIT NAV — rendered by JS after data loads -->
+  <nav class="unit-footer-nav" id="unit-footer-nav" style="display:none;">
+    <div class="unit-footer-nav__inner">
+      <!-- Previous button — hidden on unit 1 -->
+      <div id="footer-prev-wrap">
+        <a id="footer-prev-btn" href="#" class="btn btn-outline">← Previous unit</a>
+      </div>
+      <!-- Center label -->
+      <span class="unit-footer-nav__center" id="footer-unit-label"></span>
+      <!-- Next button — hidden on unit 20, disabled if locked -->
+      <div id="footer-next-wrap">
+        <a id="footer-next-btn" href="#" class="btn btn-black">Next unit →</a>
+      </div>
+    </div>
+  </nav>
 
   <script th:inline="javascript">
     window.__SUPABASE_URL__      = /*[[${supabaseUrl}]]*/ '';
@@ -61,9 +78,7 @@
     }
     document.addEventListener('click', function(e) {
       const pm = document.querySelector('.profile-menu');
-      if (pm && !pm.contains(e.target)) {
-        document.getElementById('profile-dropdown').classList.remove('open');
-      }
+      if (pm && !pm.contains(e.target)) document.getElementById('profile-dropdown').classList.remove('open');
     });
     document.addEventListener('DOMContentLoaded', initLectureList);
   </script>
