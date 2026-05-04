@@ -512,22 +512,24 @@ img {
   display: flex;
   /* 20 slides × 100% = 2000% wide. Each slide is 1/20 = 5% */
   width: 2000%;
-  animation: carousel-scroll 120s linear infinite;
+  animation: carousel-scroll 70s infinite;
 }
 
 /* Pause on hover */
-.carousel-infinite:hover .carousel-infinite__track {
-  animation-play-state: paused;
-}
+
 
 @keyframes carousel-scroll {
-  0% {
-    transform: translateX(0);
-  }
-
-  100% {
-    transform: translateX(-50%);
-  }
+  0%, 8.5% { transform: translateX(0%); }
+  10%, 18.5% { transform: translateX(-5%); }
+  20%, 28.5% { transform: translateX(-10%); }
+  30%, 38.5% { transform: translateX(-15%); }
+  40%, 48.5% { transform: translateX(-20%); }
+  50%, 58.5% { transform: translateX(-25%); }
+  60%, 68.5% { transform: translateX(-30%); }
+  70%, 78.5% { transform: translateX(-35%); }
+  80%, 88.5% { transform: translateX(-40%); }
+  90%, 98.5% { transform: translateX(-45%); }
+  100% { transform: translateX(-50%); }
 }
 
 .carousel-infinite__slide {
@@ -945,7 +947,7 @@ img {
   }
 
   .carousel-infinite__track {
-    animation: carousel-scroll 90s linear infinite;
+    animation: carousel-scroll 70s infinite;
   }
 }
 
@@ -1009,7 +1011,7 @@ img {
   }
 
   .carousel-infinite__track {
-    animation: carousel-scroll 60s linear infinite;
+    animation: carousel-scroll 70s infinite;
   }
 
   .units-grid {
