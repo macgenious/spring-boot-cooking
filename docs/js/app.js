@@ -6,7 +6,7 @@
  *   UserProgressResponse: userId, currentLessonId, progressPercentage, streakCount
  */
 
-const API_BASE = '/api';
+const API_BASE = window.__API_BASE_URL__ || '/api';
 
 /* ── Authenticated fetch with auto-refresh ── */
 async function apiFetch(path, options = {}) {
@@ -48,7 +48,7 @@ function showToast(msg, type = 'success') {
 }
 
 function hideLoading() { const e = document.getElementById('loading-overlay'); if (e) e.classList.add('hidden'); }
-function showLoading()  { const e = document.getElementById('loading-overlay'); if (e) e.classList.remove('hidden'); }
+function showLoading() { const e = document.getElementById('loading-overlay'); if (e) e.classList.remove('hidden'); }
 
 function extractYouTubeId(url) {
   if (!url) return null;
@@ -58,26 +58,26 @@ function extractYouTubeId(url) {
 
 /* ── Curriculum metadata ── */
 const UNIT_META = [
-  { title: 'Errores Básicos y Utensilios',      desc: 'Evita errores comunes y equipa tu cocina.' },
-  { title: 'Técnicas de Corte',                 desc: 'Juliana, brunoise, mirepoix y despiece de aves.' },
-  { title: 'Técnicas de Cocción',               desc: 'Métodos de cocción y puntos de temperatura exactos.' },
-  { title: 'Almacenamiento y Conservación',     desc: 'Fermentación, vacío y conservación segura.' },
-  { title: 'Cereales I: Arroz',                 desc: 'Onigiri, paella, arroz frito y biryani.' },
-  { title: 'Proteínas I: Carnes',               desc: 'Guisos, estofados, empanados y puntos de la carne.' },
-  { title: 'Proteínas II: Aves',                desc: 'Pavo asado, pollo frito y cocina de aves.' },
-  { title: 'Vegetales y Legumbres',             desc: 'Verduras y legumbres con técnicas de restaurante.' },
-  { title: 'Panadería',                         desc: 'Panes artesanales, brioche y croissants.' },
-  { title: 'Cereales II: Pasta',                desc: 'Mantecatura perfecta y recetas italianas clásicas.' },
-  { title: 'Salsas Madre',                      desc: 'Las 5 salsas madre francesas y especias esenciales.' },
-  { title: 'Proteínas III: Pescados',           desc: 'Vapor, plancha, crudo y horno para texturas perfectas.' },
-  { title: 'Platos Sencillos',                  desc: 'Cenas rápidas y tuppers en menos de 15 minutos.' },
-  { title: 'Repostería I: Dulces',              desc: 'Bizcochos, cookies y pastelería profesional.' },
+  { title: 'Errores Básicos y Utensilios', desc: 'Evita errores comunes y equipa tu cocina.' },
+  { title: 'Técnicas de Corte', desc: 'Juliana, brunoise, mirepoix y despiece de aves.' },
+  { title: 'Técnicas de Cocción', desc: 'Métodos de cocción y puntos de temperatura exactos.' },
+  { title: 'Almacenamiento y Conservación', desc: 'Fermentación, vacío y conservación segura.' },
+  { title: 'Cereales I: Arroz', desc: 'Onigiri, paella, arroz frito y biryani.' },
+  { title: 'Proteínas I: Carnes', desc: 'Guisos, estofados, empanados y puntos de la carne.' },
+  { title: 'Proteínas II: Aves', desc: 'Pavo asado, pollo frito y cocina de aves.' },
+  { title: 'Vegetales y Legumbres', desc: 'Verduras y legumbres con técnicas de restaurante.' },
+  { title: 'Panadería', desc: 'Panes artesanales, brioche y croissants.' },
+  { title: 'Cereales II: Pasta', desc: 'Mantecatura perfecta y recetas italianas clásicas.' },
+  { title: 'Salsas Madre', desc: 'Las 5 salsas madre francesas y especias esenciales.' },
+  { title: 'Proteínas III: Pescados', desc: 'Vapor, plancha, crudo y horno para texturas perfectas.' },
+  { title: 'Platos Sencillos', desc: 'Cenas rápidas y tuppers en menos de 15 minutos.' },
+  { title: 'Repostería I: Dulces', desc: 'Bizcochos, cookies y pastelería profesional.' },
   { title: 'Repostería II: Aperitivos Salados', desc: 'Croquetas, tequeños y snacks irresistibles.' },
-  { title: 'Ensaladas',                         desc: 'Ensaladas como platos principales con técnica.' },
-  { title: 'Cocina Europea',                    desc: 'Cocido, risotto, sopa de cebolla y clásicos europeos.' },
-  { title: 'Cocina Americana',                  desc: 'Tacos, quesadillas, bocadillo cubano y más.' },
-  { title: 'Cocina Asiática',                   desc: 'Pad Thai, curry verde, ramen y sushi.' },
-  { title: 'Cocina del Mundo',                  desc: 'Kebab, poke bowls, baklava y recetas globales.' }
+  { title: 'Ensaladas', desc: 'Ensaladas como platos principales con técnica.' },
+  { title: 'Cocina Europea', desc: 'Cocido, risotto, sopa de cebolla y clásicos europeos.' },
+  { title: 'Cocina Americana', desc: 'Tacos, quesadillas, bocadillo cubano y más.' },
+  { title: 'Cocina Asiática', desc: 'Pad Thai, curry verde, ramen y sushi.' },
+  { title: 'Cocina del Mundo', desc: 'Kebab, poke bowls, baklava y recetas globales.' }
 ];
 
 /* ════════════════════════════
@@ -86,7 +86,7 @@ const UNIT_META = [
 async function initDashboard() {
   if (!Auth.requireAuth()) return;
   try {
-    const userId   = Session.getUserId();
+    const userId = Session.getUserId();
     const progress = await apiFetch(`/users/${userId}/progress`);
     setText('streak-label', `${progress.streakCount || 0} day streak`);
     renderUnitsGrid(progress.progressPercentage || 0);
@@ -104,20 +104,20 @@ function renderUnitsGrid(progressPct) {
   if (!grid) return;
   grid.innerHTML = '';
 
-  const totalDone      = progressPct;
+  const totalDone = progressPct;
   const completedUnits = Math.floor(totalDone / 5);
 
   for (let i = 0; i < 20; i++) {
-    const unitNum       = i + 1;
-    const meta          = UNIT_META[i];
+    const unitNum = i + 1;
+    const meta = UNIT_META[i];
     const unitDoneCount = Math.max(0, Math.min(5, totalDone - i * 5));
-    const isComplete    = unitDoneCount >= 5;
-    const isUnlocked    = unitNum <= 3 || i < completedUnits + 3;
-    const fillPct       = (unitDoneCount / 5) * 100;
+    const isComplete = unitDoneCount >= 5;
+    const isUnlocked = unitNum <= 3 || i < completedUnits + 3;
+    const fillPct = (unitDoneCount / 5) * 100;
 
     let badgeClass = 'badge--unlocked', badgeText = `${unitDoneCount} / 5`, badgeIcon = '';
-    if (!isUnlocked) { badgeClass = 'badge--locked';   badgeText = 'Locked';   badgeIcon = '🔒 '; }
-    if (isComplete)  { badgeClass = 'badge--complete'; badgeText = 'Complete'; badgeIcon = '✓ '; }
+    if (!isUnlocked) { badgeClass = 'badge--locked'; badgeText = 'Locked'; badgeIcon = '🔒 '; }
+    if (isComplete) { badgeClass = 'badge--complete'; badgeText = 'Complete'; badgeIcon = '✓ '; }
 
     const el = document.createElement(isUnlocked ? 'a' : 'div');
     if (isUnlocked) el.href = `/lectures?unitId=${unitNum}`;
@@ -145,10 +145,10 @@ async function initLectureList() {
 
   const params = new URLSearchParams(window.location.search);
   const unitId = parseInt(params.get('unitId') || '1', 10);
-  const meta   = UNIT_META[unitId - 1] || { title: `Unit ${unitId}`, desc: '' };
+  const meta = UNIT_META[unitId - 1] || { title: `Unit ${unitId}`, desc: '' };
 
   document.title = `${meta.title} — ChefPath`;
-  setText('unit-title', `Unit ${String(unitId).padStart(2,'0')}: ${meta.title}`);
+  setText('unit-title', `Unit ${String(unitId).padStart(2, '0')}: ${meta.title}`);
   setText('unit-subtitle', meta.desc);
 
   try {
@@ -158,13 +158,13 @@ async function initLectureList() {
       apiFetch(`/users/${userId}/progress`)
     ]);
 
-    const pct            = progress.progressPercentage || 0;
-    const totalDone      = pct;
-    const unitDoneCount  = Math.max(0, Math.min(lectures.length, totalDone - (unitId - 1) * 5));
+    const pct = progress.progressPercentage || 0;
+    const totalDone = pct;
+    const unitDoneCount = Math.max(0, Math.min(lectures.length, totalDone - (unitId - 1) * 5));
     const completedUnits = Math.floor(totalDone / 5);
 
     setText('streak-label', `${progress.streakCount || 0} day streak`);
-    setText('unit-meta',    `${unitDoneCount} of ${lectures.length} lessons complete`);
+    setText('unit-meta', `${unitDoneCount} of ${lectures.length} lessons complete`);
 
     renderLessons(lectures, unitDoneCount);
     renderFooterNav(unitId, completedUnits);
@@ -188,10 +188,10 @@ function renderLessons(lectures, unitDoneCount) {
   container.innerHTML = '';
 
   lectures.forEach((lec, idx) => {
-    const isDone    = idx < unitDoneCount;
+    const isDone = idx < unitDoneCount;
     const lessonNum = idx + 1;
-    const vid       = extractYouTubeId(lec.youtubeLink || '');
-    const thumbUrl  = vid
+    const vid = extractYouTubeId(lec.youtubeLink || '');
+    const thumbUrl = vid
       ? `https://img.youtube.com/vi/${vid}/hqdefault.jpg`
       : null;
 
@@ -203,29 +203,29 @@ function renderLessons(lectures, unitDoneCount) {
       <!-- Left: video thumbnail / player -->
       <div class="lcard__video" id="video-wrap-${lec.id}">
         ${thumbUrl
-          ? `<img src="${thumbUrl}" alt="${lec.title}" class="lcard__thumb"/>
+        ? `<img src="${thumbUrl}" alt="${lec.title}" class="lcard__thumb"/>
              <button class="lcard__play-btn" onclick="playVideo(${lec.id}, '${vid}')" aria-label="Play video">▶</button>`
-          : `<div class="lcard__no-video">
+        : `<div class="lcard__no-video">
                <span style="font-size:28px;">▶</span>
                <span>No video</span>
              </div>`
-        }
+      }
       </div>
 
       <!-- Right: info + done button -->
       <div class="lcard__body">
         <div class="lcard__title">${lec.title}</div>
         ${lec.description
-          ? `<p class="lcard__desc">${lec.description}</p>`
-          : ''}
+        ? `<p class="lcard__desc">${lec.description}</p>`
+        : ''}
         <div class="lcard__actions">
           ${isDone
-            ? `<button class="btn btn-black btn-sm" disabled id="done-btn-${lec.id}">✓ Done</button>`
-            : `<button class="btn btn-outline btn-sm" id="done-btn-${lec.id}"
+        ? `<button class="btn btn-black btn-sm" disabled id="done-btn-${lec.id}">✓ Done</button>`
+        : `<button class="btn btn-outline btn-sm" id="done-btn-${lec.id}"
                  onclick="markDone(${lec.id}, 'lcard-${lec.id}')">
                  Mark as done
                </button>`
-          }
+      }
         </div>
       </div>`;
 
@@ -260,7 +260,7 @@ async function markDone(lectureId, cardId) {
 
     const card = document.getElementById(cardId);
     if (card) card.classList.add('lcard--done');
-    if (btn)  { btn.className = 'btn btn-black btn-sm'; btn.textContent = '✓ Done'; }
+    if (btn) { btn.className = 'btn btn-black btn-sm'; btn.textContent = '✓ Done'; }
   } catch (err) {
     showToast(err.message || 'Failed to save progress', 'error');
     if (btn) { btn.disabled = false; btn.textContent = 'Mark as done'; }
@@ -292,20 +292,20 @@ function renderFooterNav(unitId, completedUnits) {
     if (unitId >= 20) {
       nextWrap.style.visibility = 'hidden';
     } else {
-      const nextUnitNum  = unitId + 1;
+      const nextUnitNum = unitId + 1;
       const nextUnlocked = nextUnitNum <= 3 || (nextUnitNum - 1) < completedUnits + 3;
-      const nextBtn      = document.getElementById('footer-next-btn');
+      const nextBtn = document.getElementById('footer-next-btn');
       if (nextBtn) {
         if (nextUnlocked) {
-          nextBtn.href      = `/lectures?unitId=${nextUnitNum}`;
+          nextBtn.href = `/lectures?unitId=${nextUnitNum}`;
           nextBtn.className = 'btn btn-black';
           nextBtn.textContent = 'Next unit →';
-          nextBtn.onclick   = null;
+          nextBtn.onclick = null;
         } else {
-          nextBtn.href      = '#';
+          nextBtn.href = '#';
           nextBtn.className = 'btn btn-outline-muted';
           nextBtn.textContent = '🔒 Next unit';
-          nextBtn.onclick   = (e) => { e.preventDefault(); showToast('Complete this unit to unlock the next one! 🔒', 'error'); };
+          nextBtn.onclick = (e) => { e.preventDefault(); showToast('Complete this unit to unlock the next one! 🔒', 'error'); };
         }
       }
     }
@@ -315,7 +315,7 @@ function renderFooterNav(unitId, completedUnits) {
 /* ════════════════════════════
    GLOBALS
 ════════════════════════════ */
-window.initDashboard   = initDashboard;
+window.initDashboard = initDashboard;
 window.initLectureList = initLectureList;
-window.markDone        = markDone;
-window.playVideo       = playVideo;
+window.markDone = markDone;
+window.playVideo = playVideo;

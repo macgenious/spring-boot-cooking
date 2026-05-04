@@ -6,7 +6,7 @@
  *   UserProgressResponse: userId, currentLessonId, progressPercentage, streakCount
  */
 
-const API_BASE = '/api';
+const API_BASE = window.__API_BASE_URL__ || '/api';
 
 /* ── Authenticated fetch with auto-refresh ── */
 async function apiFetch(path, options = {}) {
