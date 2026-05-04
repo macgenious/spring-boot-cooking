@@ -120,7 +120,7 @@ function renderUnitsGrid(progressPct) {
     if (isComplete) { badgeClass = 'badge--complete'; badgeText = 'Complete'; badgeIcon = '✓ '; }
 
     const el = document.createElement(isUnlocked ? 'a' : 'div');
-    if (isUnlocked) el.href = `/lectures?unitId=${unitNum}`;
+    if (isUnlocked) el.href = `./lectures.html?unitId=${unitNum}`;
     el.className = `unit-btn${!isUnlocked ? ' unit-btn--locked' : ''}${isComplete ? ' unit-btn--complete' : ''}`;
     el.innerHTML = `
       <span class="unit-btn__num">${String(unitNum).padStart(2, '0')}</span>
@@ -283,7 +283,7 @@ function renderFooterNav(unitId, completedUnits) {
       prevWrap.style.visibility = 'hidden';
     } else {
       const prevBtn = document.getElementById('footer-prev-btn');
-      if (prevBtn) prevBtn.href = `/lectures?unitId=${unitId - 1}`;
+      if (prevBtn) prevBtn.href = `./lectures.html?unitId=${unitId - 1}`;
     }
   }
 
@@ -297,7 +297,7 @@ function renderFooterNav(unitId, completedUnits) {
       const nextBtn = document.getElementById('footer-next-btn');
       if (nextBtn) {
         if (nextUnlocked) {
-          nextBtn.href = `/lectures?unitId=${nextUnitNum}`;
+          nextBtn.href = `./lectures.html?unitId=${nextUnitNum}`;
           nextBtn.className = 'btn btn-black';
           nextBtn.textContent = 'Next unit →';
           nextBtn.onclick = null;
