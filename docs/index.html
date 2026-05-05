@@ -21,7 +21,16 @@
       <form id="login-form" class="login-form" onsubmit="return handleLogin(event)">
         <input id="email" type="email" class="input-field" placeholder="Email address" required autocomplete="email"/>
         <input id="password" type="password" class="input-field" placeholder="Password" required minlength="6" autocomplete="current-password"/>
-        <button type="submit" id="btn-login" class="btn btn-black btn-full" style="margin-top:4px;">Sign In</button>
+        
+        <div id="captcha-container" style="display:none; margin-top:8px; flex-direction:column; gap:8px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <canvas id="captcha-canvas" width="120" height="40" style="border: 1px solid var(--border); border-radius: var(--radius-pill); background: var(--snow);"></canvas>
+            <button type="button" onclick="refreshCaptcha()" style="background:none; border:1px solid var(--border); border-radius:50%; width:32px; height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--black);">🔄</button>
+          </div>
+          <input id="captcha-input" type="text" class="input-field" placeholder="Enter CAPTCHA" autocomplete="off"/>
+        </div>
+
+        <button type="submit" id="btn-login" class="btn btn-black btn-full" style="margin-top:12px;">Sign In</button>
       </form>
 
       <p class="login-footer">
@@ -35,25 +44,86 @@
   <script src="./js/supabase-auth.js"></script>
   <script>
     let isSignUp = false;
+    let currentCaptcha = "";
+
+    function generateCaptchaText() {
+        const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        let str = "";
+        for (let i = 0; i < 5; i++) str += chars[Math.floor(Math.random() * chars.length)];
+        return str;
+    }
+
+    function drawCaptcha(canvasId, text) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.font = "bold 20px sans-serif";
+        ctx.textBaseline = "middle";
+        // Noise
+        for(let i = 0; i < 30; i++) {
+            ctx.fillStyle = `rgba(0,0,0,0.1)`;
+            ctx.beginPath();
+            ctx.arc(Math.random()*canvas.width, Math.random()*canvas.height, Math.random()*2, 0, Math.PI*2);
+            ctx.fill();
+        }
+        // Text
+        for (let i = 0; i < text.length; i++) {
+            ctx.save();
+            ctx.translate(15 + i * 20, canvas.height / 2);
+            ctx.rotate((Math.random() - 0.5) * 0.4);
+            ctx.fillStyle = "#111";
+            ctx.fillText(text[i], 0, 0);
+            ctx.restore();
+        }
+    }
+
+    function refreshCaptcha() {
+        currentCaptcha = generateCaptchaText();
+        drawCaptcha('captcha-canvas', currentCaptcha);
+        document.getElementById('captcha-input').value = '';
+    }
+
     function toggleMode(e) {
       e.preventDefault(); isSignUp = !isSignUp;
       const btn = document.getElementById('btn-login');
       const footer = document.querySelector('.login-footer');
+      const captchaContainer = document.getElementById('captcha-container');
+      const captchaInput = document.getElementById('captcha-input');
+      
       if (isSignUp) {
         btn.textContent = 'Create Account';
         footer.innerHTML = 'Already have an account? <a href="#" onclick="toggleMode(event)">Sign In</a>';
+        captchaContainer.style.display = 'flex';
+        captchaInput.required = true;
+        refreshCaptcha();
       } else {
         btn.textContent = 'Sign In';
         footer.innerHTML = 'Don\'t have an account? <a href="#" onclick="toggleMode(event)">Sign Up</a>';
+        captchaContainer.style.display = 'none';
+        captchaInput.required = false;
       }
     }
+
     async function handleLogin(e) {
       e.preventDefault();
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
       const errEl = document.getElementById('auth-error');
       const btn = document.getElementById('btn-login');
-      errEl.style.display = 'none'; btn.disabled = true;
+      errEl.style.display = 'none'; 
+
+      if (isSignUp) {
+          const userCaptcha = document.getElementById('captcha-input').value.trim();
+          if (userCaptcha !== currentCaptcha) {
+              errEl.textContent = 'CAPTCHA is incorrect, please try again.';
+              errEl.style.display = 'block';
+              refreshCaptcha();
+              return false;
+          }
+      }
+
+      btn.disabled = true;
       btn.textContent = isSignUp ? 'Creating…' : 'Signing in…';
       try {
         if (isSignUp) {
@@ -65,9 +135,10 @@
           window.location.href = './dashboard.html';
         }
       } catch(err) { errEl.textContent = err.message; errEl.style.display = 'block'; }
-      finally { btn.disabled = false; btn.textContent = isSignUp ? 'Create Account' : 'Sign In'; }
+      finally { btn.disabled = false; btn.textContent = isSignUp ? 'Create Account' : 'Sign In'; refreshCaptcha(); }
       return false;
     }
+
     if (Auth.isAuthenticated()) window.location.href = './dashboard.html';
   </script>
 </body>

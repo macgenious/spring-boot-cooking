@@ -6,7 +6,7 @@
   --white: #ffffff;
   --snow: #f8f8f8;
   --light: #efefef;
-  --border: #e2e2e2;
+  --border: #9b9b9b;
   --muted: #767676;
   --faint: #aaaaaa;
   --accent: #111111;
@@ -51,6 +51,24 @@ body {
   background: var(--white);
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
+}
+
+/* ── Dark Mode ── */
+[data-theme="dark"] {
+  --black: #f0f0f0;
+  --near-black: #e0e0e0;
+  --white: #0e0e0e;
+  --snow: #1a1a1a;
+  --light: #252525;
+  --border: #d5d5d5;
+  --muted: #999999;
+  --faint: #555555;
+  --accent: #f0f0f0;
+}
+
+[data-theme="dark"] body {
+  color: #f0f0f0;
+  background: #0e0e0e;
 }
 
 a {
@@ -111,6 +129,15 @@ img {
   animation: spin .6s linear infinite;
 }
 
+[data-theme="dark"] .loading-overlay {
+  background: rgba(14, 14, 14, 0.9);
+}
+
+[data-theme="dark"] .spinner {
+  border-color: #444;
+  border-top-color: #f0f0f0;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -145,6 +172,15 @@ img {
   border: 1px solid #444;
 }
 
+/* I want the font colour to be white */
+[data-theme="dark"] .toast {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .toast--error {
+  color: #ffffff;
+}
+
 /* ════════════════════════════
    NAVBAR
 ════════════════════════════ */
@@ -159,6 +195,10 @@ img {
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
+}
+
+[data-theme="dark"] .navbar {
+  background: rgba(14, 14, 14, 0.92);
 }
 
 .navbar__inner {
@@ -512,66 +552,30 @@ img {
   display: flex;
   /* 20 slides × 100% = 2000% wide. Each slide is 1/20 = 5% */
   width: 2000%;
-  animation: carousel-scroll 70s infinite;
 }
 
-/* Pause on hover */
+/* ── Carousel Navigation Buttons ── */
+.carousel-btn {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-pill);
+  background: var(--white);
+  border: 1px solid var(--border);
+  color: var(--black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 10;
+  transition: background var(--t), transform var(--t);
+  outline: none;
+}
 
-@keyframes carousel-scroll {
-
-  0%,
-  8.5% {
-    transform: translateX(0%);
-  }
-
-  10%,
-  18.5% {
-    transform: translateX(-5%);
-  }
-
-  20%,
-  28.5% {
-    transform: translateX(-10%);
-  }
-
-  30%,
-  38.5% {
-    transform: translateX(-15%);
-  }
-
-  40%,
-  48.5% {
-    transform: translateX(-20%);
-  }
-
-  50%,
-  58.5% {
-    transform: translateX(-25%);
-  }
-
-  60%,
-  68.5% {
-    transform: translateX(-30%);
-  }
-
-  70%,
-  78.5% {
-    transform: translateX(-35%);
-  }
-
-  80%,
-  88.5% {
-    transform: translateX(-40%);
-  }
-
-  90%,
-  98.5% {
-    transform: translateX(-45%);
-  }
-
-  100% {
-    transform: translateX(-50%);
-  }
+.carousel-btn:hover {
+  background: var(--snow);
+  transform: scale(1.05);
 }
 
 .carousel-infinite__slide {
@@ -819,6 +823,12 @@ img {
   text-align: center;
 }
 
+.profile-page__header {
+  padding: var(--sp-xl) 0 var(--sp-xl);
+  margin-bottom: var(--sp-xs);
+  text-align: center;
+}
+
 .back-link {
   display: inline-flex;
   align-items: center;
@@ -1028,6 +1038,14 @@ img {
   color: var(--faint);
   letter-spacing: .06em;
   text-transform: uppercase;
+}
+
+[data-theme="dark"] .unit-footer-nav {
+  background: rgba(14, 14, 14, 0.96);
+}
+
+[data-theme="dark"] .unit-footer-nav__inner {
+  color: #ffffff;
 }
 
 /* ════════════════════════════

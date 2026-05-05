@@ -1,14 +1,21 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="ChefPath — Unit lectures."/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ChefPath — Unit lectures." />
   <title>Unit — ChefPath</title>
-  <link rel="stylesheet" th:href="@{/css/design-system.css}"/>
+  <link rel="stylesheet" th:href="@{/css/design-system.css}" />
+  <script>
+    (function(){var t=localStorage.getItem('chefpath-theme');if(t)document.documentElement.setAttribute('data-theme',t);})();
+  </script>
 </head>
+
 <body>
-  <div id="loading-overlay" class="loading-overlay"><div class="spinner"></div></div>
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="spinner"></div>
+  </div>
 
   <!-- TOP NAVBAR -->
   <nav class="navbar">
@@ -21,16 +28,10 @@
           <span class="streak-badge__icon">🔥</span>
           <span id="streak-label">0 day streak</span>
         </div>
-        <div class="profile-menu">
-          <button class="profile-btn" onclick="toggleProfileMenu()">
-            <div class="profile-btn__avatar">👤</div>
-            <span>Profile</span>
-            <span style="font-size:10px;color:var(--faint);">▾</span>
-          </button>
-          <div class="profile-dropdown" id="profile-dropdown">
-            <button class="profile-dropdown__item profile-dropdown__item--danger" onclick="Auth.signOut()">Sign out</button>
-          </div>
-        </div>
+        <a href="/profile" class="profile-btn" style="text-decoration: none;">
+          <div class="profile-btn__avatar">👤</div>
+          <span>Profile</span>
+        </a>
       </div>
     </div>
   </nav>
@@ -39,7 +40,7 @@
   <main>
     <div class="container unit-page">
       <div class="unit-page__header">
-        <a href="/dashboard#units-section" class="back-link">← Back to curriculum</a>
+        <a href="/dashboard#units-section" class="back-link">← Back to dashboard</a>
         <h1 class="unit-page__title" id="unit-title">Loading…</h1>
         <p class="unit-page__subtitle" id="unit-subtitle"></p>
         <p class="unit-page__meta" id="unit-meta"></p>
@@ -67,20 +68,14 @@
   </nav>
 
   <script th:inline="javascript">
-    window.__SUPABASE_URL__      = /*[[${supabaseUrl}]]*/ '';
+    window.__SUPABASE_URL__ = /*[[${supabaseUrl}]]*/ '';
     window.__SUPABASE_ANON_KEY__ = /*[[${supabaseAnonKey}]]*/ '';
   </script>
   <script th:src="@{/js/supabase-auth.js}"></script>
   <script th:src="@{/js/app.js}"></script>
   <script>
-    function toggleProfileMenu() {
-      document.getElementById('profile-dropdown').classList.toggle('open');
-    }
-    document.addEventListener('click', function(e) {
-      const pm = document.querySelector('.profile-menu');
-      if (pm && !pm.contains(e.target)) document.getElementById('profile-dropdown').classList.remove('open');
-    });
     document.addEventListener('DOMContentLoaded', initLectureList);
   </script>
 </body>
+
 </html>

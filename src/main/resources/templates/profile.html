@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ChefPath Profile Settings" />
+  <title>Profile — ChefPath</title>
+  <link rel="stylesheet" th:href="@{/css/design-system.css}" />
+  <script>
+    (function(){var t=localStorage.getItem('chefpath-theme');if(t)document.documentElement.setAttribute('data-theme',t);})();
+  </script>
+</head>
+
+<body>
+  <div id="loading-overlay" class="loading-overlay hidden">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- ── NAVBAR ── -->
+  <nav class="navbar">
+    <div class="navbar__inner">
+      <a href="/dashboard" class="navbar__logo">
+        <span class="navbar__logo-icon">👨‍🍳</span> ChefPath
+      </a>
+      <div class="navbar__right">
+        <a href="/profile" class="profile-btn" style="text-decoration: none;">
+          <div class="profile-btn__avatar">👤</div>
+          <span>Profile</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+
+  <div class="profile-page__header">
+    <a href="/dashboard" class="back-link">← Back to dashboard</a>
+  </div>
+
+  <!-- ── PROFILE SETTINGS ── -->
+  <main class="container" style="max-width: 600px; padding-bottom: var(--sp-2xl);">
+    <h1
+      style="font-family: var(--font-display); font-size: 32px; font-weight: 600; margin-bottom: var(--sp-sm); letter-spacing: -0.02em;">
+      Profile Settings</h1>
+    <p style="color: var(--muted); margin-bottom: var(--sp-xl);">Manage your account preferences and settings.</p>
+
+    <div style="display: flex; flex-direction: column; gap: var(--sp-md);">
+
+      <!-- Theme Setting -->
+      <div
+        style="border: 1px solid var(--border); border-radius: var(--radius-card); padding: var(--sp-lg); display: flex; align-items: center; justify-content: space-between;">
+        <div>
+          <h2 style="font-size: 16px; font-weight: 500; margin-bottom: 4px;">Theme</h2>
+          <p style="font-size: 13px; color: var(--muted);">Switch between light and dark mode.</p>
+        </div>
+        <button id="btn-toggle-theme" class="btn btn-outline btn-sm">Toggle Theme</button>
+      </div>
+
+      <!-- Password Setting -->
+      <div
+        style="border: 1px solid var(--border); border-radius: var(--radius-card); padding: var(--sp-lg); display: flex; align-items: center; justify-content: space-between;">
+        <div>
+          <h2 style="font-size: 16px; font-weight: 500; margin-bottom: 4px;">Password</h2>
+          <p style="font-size: 13px; color: var(--muted);">Update your account password.</p>
+        </div>
+        <button class="btn btn-outline btn-sm">Change Password</button>
+      </div>
+
+      <!-- Sign Out -->
+      <div
+        style="border: 1px solid var(--border); border-radius: var(--radius-card); padding: var(--sp-lg); display: flex; align-items: center; justify-content: space-between;">
+        <div>
+          <h2 style="font-size: 16px; font-weight: 500; margin-bottom: 4px;">Sign Out</h2>
+          <p style="font-size: 13px; color: var(--muted);">Log out of your current session.</p>
+        </div>
+        <button id="btn-sign-out" class="btn btn-outline btn-sm">Sign Out</button>
+      </div>
+
+      <!-- Delete Account -->
+      <div
+        style="border: 1px solid var(--border); border-radius: var(--radius-card); padding: var(--sp-lg); display: flex; align-items: center; justify-content: space-between; background: var(--snow);">
+        <div>
+          <h2 style="font-size: 16px; font-weight: 500; margin-bottom: 4px; color: var(--black);">Delete Account</h2>
+          <p style="font-size: 13px; color: var(--muted);">Permanently delete your account and data.</p>
+        </div>
+        <button class="btn btn-black btn-sm">Delete Account</button>
+      </div>
+
+    </div>
+  </main>
+
+  <script th:inline="javascript">
+    window.__SUPABASE_URL__ = /*[[${supabaseUrl}]]*/ '';
+    window.__SUPABASE_ANON_KEY__ = /*[[${supabaseAnonKey}]]*/ '';
+  </script>
+  <script th:src="@{/js/supabase-auth.js}"></script>
+  <script>
+    // ── Theme ──
+    const root = document.documentElement;
+    const THEME_KEY = 'chefpath-theme';
+    function applyTheme(theme) {
+      root.setAttribute('data-theme', theme);
+      localStorage.setItem(THEME_KEY, theme);
+      const btn = document.getElementById('btn-toggle-theme');
+      if (btn) btn.textContent = theme === 'dark' ? 'Switch to Light' : 'Switch to Dark';
+    }
+    // Restore saved theme on load
+    applyTheme(localStorage.getItem(THEME_KEY) || 'light');
+    document.getElementById('btn-toggle-theme').addEventListener('click', function () {
+      const current = root.getAttribute('data-theme') || 'light';
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    });
+
+    // ── Sign Out ──
+    document.getElementById('btn-sign-out').addEventListener('click', async function () {
+      try {
+        await Auth.signOut();
+      } catch (e) {
+        // signOut may throw on network error — redirect anyway
+      }
+      window.location.href = '/login';
+    });
+  </script>
+</body>
+
+</html>

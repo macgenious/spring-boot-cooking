@@ -110,6 +110,18 @@ public class ViewController {
         return "lecture";
     }
 
+    /**
+     * User profile settings page.
+     *
+     * @param model the Thymeleaf model
+     * @return the profile template name
+     */
+    @GetMapping("/profile")
+    public String profile(Model model) {
+        addSupabaseAttributes(model);
+        return "profile";
+    }
+
     // ------------------------------------------------------------------
     // Private helpers
     // ------------------------------------------------------------------

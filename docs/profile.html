@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="ChefPath Profile Settings"/>
+  <title>Profile — ChefPath</title>
+  <link rel="stylesheet" href="./css/design-system.css"/>
+  <script>
+    (function(){var t=localStorage.getItem('chefpath-theme');if(t)document.documentElement.setAttribute('data-theme',t);})();
+  </script>
+</head>
+<body>
+  <div id="loading-overlay" class="loading-overlay hidden"><div class="spinner"></div></div>
+
+  <!-- ── NAVBAR ── -->
+  <nav class="navbar">
+    <div class="navbar__inner">
+      <a href="./dashboard.html" class="navbar__logo">
+        <span class="navbar__logo-icon">👨‍🍳</span> ChefPath
+      </a>
+      <div class="navbar__right">
+        <a href="./profile.html" class="profile-btn" style="text-decoration: none;">
+          <div class="profile-btn__avatar">👤</div>
+          <span>Profile</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── PROFILE SETTINGS ── -->
+  <main class="container" style="max-width: 600px; padding-top: var(--sp-2xl); padding-bottom: var(--sp-2xl);">
+    <h1 style="font-family: var(--font-display); font-size: 32px; font-weight: 600; margin-bottom: var(--sp-sm); letter-spacing: -0.02em;">Profile Settings</h1>
+    <p style="color: var(--muted); margin-bottom: var(--sp-xl);">Manage your account preferences and settings.</p>
+
+    <div style="display: flex; flex-direction: column; gap: var(--sp-md);">
+      
+      <!-- Theme Setting -->
+      <div style="border: 1px solid var(--border); border-radius: var(--radius-card); padding: var(--sp-lg); display: flex; align-items: center; justify-content: space-between;">
+        <div>
+          <h2 style="font-size: 16px; font-weight: 500; margin-bottom: 4px;">Theme</h2>
+          <p style="font-size: 13px; color: var(--muted);">Switch between light and dark mode.</p>
+        </div>
+        <button id="btn-toggle-theme" class="btn btn-outline btn-sm">Toggle Theme</button>
+      </div>
+
+      <!-- Password Setting -->
+      <div style="border: 1px solid var(--border); border-radius: var(--radius-card); padding: var(--sp-lg); display: flex; align-items: center; justify-content: space-between;">
+        <div>
+          <h2 style="font-size: 16px; font-weight: 500; margin-bottom: 4px;">Password</h2>
+          <p style="font-size: 13px; color: var(--muted);">Update your account password.</p>
+        </div>
+        <button class="btn btn-outline btn-sm">Change Password</button>
+      </div>
+
+      <!-- Sign Out -->
+      <div style="border: 1px solid var(--border); border-radius: var(--radius-card); padding: var(--sp-lg); display: flex; align-items: center; justify-content: space-between;">
+        <div>
+          <h2 style="font-size: 16px; font-weight: 500; margin-bottom: 4px;">Sign Out</h2>
+          <p style="font-size: 13px; color: var(--muted);">Log out of your current session.</p>
+        </div>
+        <button id="btn-sign-out" class="btn btn-outline btn-sm">Sign Out</button>
+      </div>
+
+      <!-- Delete Account -->
+      <div style="border: 1px solid var(--border); border-radius: var(--radius-card); padding: var(--sp-lg); display: flex; align-items: center; justify-content: space-between; background: var(--snow);">
+        <div>
+          <h2 style="font-size: 16px; font-weight: 500; margin-bottom: 4px; color: var(--black);">Delete Account</h2>
+          <p style="font-size: 13px; color: var(--muted);">Permanently delete your account and data.</p>
+        </div>
+        <button id="btn-show-delete" class="btn btn-black btn-sm">Delete Account</button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ── DELETE ACCOUNT MODAL ── -->
+  <div id="delete-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:1000; padding:var(--sp-md);">
+    <div style="background:var(--snow); padding:var(--sp-xl); border-radius:var(--radius-card); width:100%; max-width:400px; text-align:center; border: 1px solid var(--border);">
+      <h2 style="font-size:20px; font-weight:600; margin-bottom:8px; font-family:var(--font-display);">Confirm Deletion</h2>
+      <p style="color:var(--muted); margin-bottom:20px; font-size:14px;">Please complete the CAPTCHA to confirm you want to delete your account.</p>
+      
+      <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:12px;">
+         <canvas id="delete-captcha-canvas" width="120" height="40" style="border:1px solid var(--border); border-radius:var(--radius-pill); background: white;"></canvas>
+         <button type="button" onclick="refreshDeleteCaptcha()" style="background:none; border:1px solid var(--border); border-radius:50%; width:32px; height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--black);">🔄</button>
+      </div>
+      
+      <input type="text" id="delete-captcha-input" class="input-field" placeholder="Enter CAPTCHA" style="margin-bottom:16px;" autocomplete="off" />
+      <div id="delete-error" style="color:#ef4444; font-size:13px; margin-bottom:16px; display:none;"></div>
+      
+      <div style="display:flex; gap:12px;">
+         <button id="btn-cancel-delete" class="btn btn-outline" style="flex:1;">Cancel</button>
+         <button id="btn-confirm-delete" class="btn btn-black" style="flex:1; background:#ef4444; border-color:#ef4444; color:white;">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./js/config.js"></script>
+  <script src="./js/supabase-auth.js"></script>
+  <script>
+    // ── Theme ──
+    const root = document.documentElement;
+    const THEME_KEY = 'chefpath-theme';
+    function applyTheme(theme) {
+      root.setAttribute('data-theme', theme);
+      localStorage.setItem(THEME_KEY, theme);
+      const btn = document.getElementById('btn-toggle-theme');
+      if (btn) btn.textContent = theme === 'dark' ? 'Switch to Light' : 'Switch to Dark';
+    }
+    applyTheme(localStorage.getItem(THEME_KEY) || 'light');
+    document.getElementById('btn-toggle-theme').addEventListener('click', function () {
+      const current = root.getAttribute('data-theme') || 'light';
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    });
+
+    // ── Sign Out ──
+    document.getElementById('btn-sign-out').addEventListener('click', async function () {
+      try { await Auth.signOut(); } catch (e) {}
+      window.location.href = './index.html';
+    });
+
+    // ── Delete Account CAPTCHA & Logic ──
+    let deleteCaptchaText = "";
+
+    function generateCaptchaText() {
+        const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        let str = "";
+        for (let i = 0; i < 5; i++) str += chars[Math.floor(Math.random() * chars.length)];
+        return str;
+    }
+
+    function drawCaptchaCanvas(canvasId, text) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.font = "bold 20px sans-serif";
+        ctx.textBaseline = "middle";
+        // Noise
+        for(let i = 0; i < 30; i++) {
+            ctx.fillStyle = `rgba(0,0,0,0.1)`;
+            ctx.beginPath();
+            ctx.arc(Math.random()*canvas.width, Math.random()*canvas.height, Math.random()*2, 0, Math.PI*2);
+            ctx.fill();
+        }
+        // Text
+        for (let i = 0; i < text.length; i++) {
+            ctx.save();
+            ctx.translate(15 + i * 20, canvas.height / 2);
+            ctx.rotate((Math.random() - 0.5) * 0.4);
+            ctx.fillStyle = "#111";
+            ctx.fillText(text[i], 0, 0);
+            ctx.restore();
+        }
+    }
+
+    function refreshDeleteCaptcha() {
+        deleteCaptchaText = generateCaptchaText();
+        drawCaptchaCanvas('delete-captcha-canvas', deleteCaptchaText);
+        document.getElementById('delete-captcha-input').value = '';
+    }
+
+    const deleteModal = document.getElementById('delete-modal');
+    const btnShowDelete = document.getElementById('btn-show-delete');
+    const btnCancelDelete = document.getElementById('btn-cancel-delete');
+    const btnConfirmDelete = document.getElementById('btn-confirm-delete');
+    const deleteError = document.getElementById('delete-error');
+
+    btnShowDelete.addEventListener('click', () => {
+        deleteModal.style.display = 'flex';
+        refreshDeleteCaptcha();
+        deleteError.style.display = 'none';
+    });
+
+    btnCancelDelete.addEventListener('click', () => {
+        deleteModal.style.display = 'none';
+    });
+
+    btnConfirmDelete.addEventListener('click', async () => {
+        const val = document.getElementById('delete-captcha-input').value.trim();
+        if (val !== deleteCaptchaText) {
+            deleteError.textContent = "CAPTCHA is incorrect, please try again.";
+            deleteError.style.display = 'block';
+            refreshDeleteCaptcha();
+            return;
+        }
+        
+        btnConfirmDelete.disabled = true;
+        btnConfirmDelete.textContent = "Deleting...";
+        try {
+            const userId = Session.getUserId();
+            if (userId) {
+                // Delete user data from public tables if possible, using Supabase REST
+                // Assuming RLS allows users to delete their own records in `users`
+                await fetch(`${SUPABASE_URL}/rest/v1/users?id=eq.${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${Session.getJwt()}`
+                    }
+                });
+            }
+            // Sign out
+            await Auth.signOut();
+            window.location.href = './index.html';
+        } catch(err) {
+            deleteError.textContent = "Failed to delete account. Please try again.";
+            deleteError.style.display = 'block';
+            btnConfirmDelete.disabled = false;
+            btnConfirmDelete.textContent = "Delete";
+            refreshDeleteCaptcha();
+        }
+    });
+  </script>
+</body>
+</html>
