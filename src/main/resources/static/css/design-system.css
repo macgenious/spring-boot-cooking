@@ -517,19 +517,61 @@ img {
 
 /* Pause on hover */
 
-
 @keyframes carousel-scroll {
-  0%, 8.5% { transform: translateX(0%); }
-  10%, 18.5% { transform: translateX(-5%); }
-  20%, 28.5% { transform: translateX(-10%); }
-  30%, 38.5% { transform: translateX(-15%); }
-  40%, 48.5% { transform: translateX(-20%); }
-  50%, 58.5% { transform: translateX(-25%); }
-  60%, 68.5% { transform: translateX(-30%); }
-  70%, 78.5% { transform: translateX(-35%); }
-  80%, 88.5% { transform: translateX(-40%); }
-  90%, 98.5% { transform: translateX(-45%); }
-  100% { transform: translateX(-50%); }
+
+  0%,
+  8.5% {
+    transform: translateX(0%);
+  }
+
+  10%,
+  18.5% {
+    transform: translateX(-5%);
+  }
+
+  20%,
+  28.5% {
+    transform: translateX(-10%);
+  }
+
+  30%,
+  38.5% {
+    transform: translateX(-15%);
+  }
+
+  40%,
+  48.5% {
+    transform: translateX(-20%);
+  }
+
+  50%,
+  58.5% {
+    transform: translateX(-25%);
+  }
+
+  60%,
+  68.5% {
+    transform: translateX(-30%);
+  }
+
+  70%,
+  78.5% {
+    transform: translateX(-35%);
+  }
+
+  80%,
+  88.5% {
+    transform: translateX(-40%);
+  }
+
+  90%,
+  98.5% {
+    transform: translateX(-45%);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 .carousel-infinite__slide {

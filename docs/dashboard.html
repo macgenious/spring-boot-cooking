@@ -1,14 +1,18 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="ChefPath Dashboard — your cooking curriculum overview."/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ChefPath Dashboard — your cooking curriculum overview." />
   <title>Dashboard — ChefPath</title>
-  <link rel="stylesheet" href="./css/design-system.css"/>
+  <link rel="stylesheet" href="./css/design-system.css" />
 </head>
+
 <body>
-  <div id="loading-overlay" class="loading-overlay"><div class="spinner"></div></div>
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="spinner"></div>
+  </div>
 
   <!-- ── NAVBAR ── -->
   <nav class="navbar">
@@ -28,7 +32,8 @@
             <span style="font-size:10px;color:var(--faint);">▾</span>
           </button>
           <div class="profile-dropdown" id="profile-dropdown">
-            <button class="profile-dropdown__item profile-dropdown__item--danger" onclick="Auth.signOut()">Sign out</button>
+            <button class="profile-dropdown__item profile-dropdown__item--danger" onclick="Auth.signOut()">Sign
+              out</button>
           </div>
         </div>
       </div>
@@ -43,168 +48,192 @@
     </div>
 
     <!-- Full-bleed carousel (not inside container for max width) -->
-    <div class="carousel-infinite" style="margin-left:auto;margin-right:auto;width:min(900px,calc(100% - 48px));">
-      <div class="carousel-infinite__track">
+    <div class="carousel-infinite"
+      style="margin-left:auto;margin-right:auto;width:min(900px,calc(100% - 48px)); position: relative;">
+      <button class="carousel-btn carousel-btn--prev" onclick="moveCarousel(-1)"
+        aria-label="Previous fact">&#10094;</button>
+      <button class="carousel-btn carousel-btn--next" onclick="moveCarousel(1)" aria-label="Next fact">&#10095;</button>
+      <div class="carousel-infinite__track" id="fact-carousel-track">
 
         <!-- ── Original 10 slides ── -->
         <div class="carousel-infinite__slide">
-          <div class="carousel-infinite__img"><img src="./img/fact_1.jpg" alt="Honey" loading="eager"/></div>
+          <div class="carousel-infinite__img"><img src="./img/fact_1.jpg" alt="Honey" loading="eager" /></div>
           <div class="carousel-infinite__body">
             <span class="carousel-infinite__fact-num">Fact 01</span>
-            <p class="carousel-infinite__fact-text">Honey never spoils — archaeologists found 3,000-year-old honey in Egyptian tombs that was still perfectly edible.</p>
+            <p class="carousel-infinite__fact-text">Honey never spoils — archaeologists found 3,000-year-old honey in
+              Egyptian tombs that was still perfectly edible.</p>
           </div>
         </div>
 
         <div class="carousel-infinite__slide">
-          <div class="carousel-infinite__img"><img src="./img/fact_2.jpg" alt="Tomato" loading="lazy"/></div>
+          <div class="carousel-infinite__img"><img src="./img/fact_2.jpg" alt="Tomato" loading="lazy" /></div>
           <div class="carousel-infinite__body">
             <span class="carousel-infinite__fact-num">Fact 02</span>
-            <p class="carousel-infinite__fact-text">Tomatoes are botanically fruits but legally treated as vegetables due to their savory flavor profile.</p>
+            <p class="carousel-infinite__fact-text">Tomatoes are botanically fruits but legally treated as vegetables
+              due to their savory flavor profile.</p>
           </div>
         </div>
 
         <div class="carousel-infinite__slide">
-          <div class="carousel-infinite__img"><img src="./img/fact_3.jpg" alt="Dark Chocolate" loading="lazy"/></div>
+          <div class="carousel-infinite__img"><img src="./img/fact_3.jpg" alt="Dark Chocolate" loading="lazy" /></div>
           <div class="carousel-infinite__body">
             <span class="carousel-infinite__fact-num">Fact 03</span>
-            <p class="carousel-infinite__fact-text">Dark chocolate contains flavonoids — antioxidants that support cardiovascular health and improve blood flow.</p>
+            <p class="carousel-infinite__fact-text">Dark chocolate contains flavonoids — antioxidants that support
+              cardiovascular health and improve blood flow.</p>
           </div>
         </div>
 
         <div class="carousel-infinite__slide">
-          <div class="carousel-infinite__img"><img src="./img/fact_4.jpg" alt="Banana" loading="lazy"/></div>
+          <div class="carousel-infinite__img"><img src="./img/fact_4.jpg" alt="Banana" loading="lazy" /></div>
           <div class="carousel-infinite__body">
             <span class="carousel-infinite__fact-num">Fact 04</span>
-            <p class="carousel-infinite__fact-text">Bananas emit trace radiation from potassium-40, but you'd need to eat millions at once for it to be harmful.</p>
+            <p class="carousel-infinite__fact-text">Bananas emit trace radiation from potassium-40, but you'd need to
+              eat millions at once for it to be harmful.</p>
           </div>
         </div>
 
         <div class="carousel-infinite__slide">
-          <div class="carousel-infinite__img"><img src="./img/fact_5.jpg" alt="Sea Salt" loading="lazy"/></div>
+          <div class="carousel-infinite__img"><img src="./img/fact_5.jpg" alt="Sea Salt" loading="lazy" /></div>
           <div class="carousel-infinite__body">
             <span class="carousel-infinite__fact-num">Fact 05</span>
-            <p class="carousel-infinite__fact-text">Sea salt retains trace minerals like magnesium and calcium, giving it a richer, brinier flavor than table salt.</p>
+            <p class="carousel-infinite__fact-text">Sea salt retains trace minerals like magnesium and calcium, giving
+              it a richer, brinier flavor than table salt.</p>
           </div>
         </div>
 
         <div class="carousel-infinite__slide">
-          <div class="carousel-infinite__img"><img src="./img/fact_6.jpg" alt="Spice" loading="lazy"/></div>
+          <div class="carousel-infinite__img"><img src="./img/fact_6.jpg" alt="Spice" loading="lazy" /></div>
           <div class="carousel-infinite__body">
             <span class="carousel-infinite__fact-num">Fact 06</span>
-            <p class="carousel-infinite__fact-text">Capsaicin in spicy foods triggers heat receptors, prompting the brain to release endorphins — a natural high.</p>
+            <p class="carousel-infinite__fact-text">Capsaicin in spicy foods triggers heat receptors, prompting the
+              brain to release endorphins — a natural high.</p>
           </div>
         </div>
 
         <div class="carousel-infinite__slide">
-          <div class="carousel-infinite__img"><img src="./img/fact_7.jpg" alt="Avocado" loading="lazy"/></div>
+          <div class="carousel-infinite__img"><img src="./img/fact_7.jpg" alt="Avocado" loading="lazy" /></div>
           <div class="carousel-infinite__body">
             <span class="carousel-infinite__fact-num">Fact 07</span>
-            <p class="carousel-infinite__fact-text">Avocados are technically single-seeded berries packed with monounsaturated fats that lower bad cholesterol.</p>
+            <p class="carousel-infinite__fact-text">Avocados are technically single-seeded berries packed with
+              monounsaturated fats that lower bad cholesterol.</p>
           </div>
         </div>
 
         <div class="carousel-infinite__slide">
-          <div class="carousel-infinite__img"><img src="./img/fact_8.jpg" alt="Fermented foods" loading="lazy"/></div>
+          <div class="carousel-infinite__img"><img src="./img/fact_8.jpg" alt="Fermented foods" loading="lazy" /></div>
           <div class="carousel-infinite__body">
             <span class="carousel-infinite__fact-num">Fact 08</span>
-            <p class="carousel-infinite__fact-text">Fermented foods like kimchi, kefir, and yogurt contain live probiotics that strengthen the gut microbiome.</p>
+            <p class="carousel-infinite__fact-text">Fermented foods like kimchi, kefir, and yogurt contain live
+              probiotics that strengthen the gut microbiome.</p>
           </div>
         </div>
 
         <div class="carousel-infinite__slide">
-          <div class="carousel-infinite__img"><img src="./img/fact_9.jpg" alt="Umami" loading="lazy"/></div>
+          <div class="carousel-infinite__img"><img src="./img/fact_9.jpg" alt="Umami" loading="lazy" /></div>
           <div class="carousel-infinite__body">
             <span class="carousel-infinite__fact-num">Fact 09</span>
-            <p class="carousel-infinite__fact-text">Umami — the fifth basic taste — comes from glutamates found naturally in aged cheeses, mushrooms, and soy sauce.</p>
+            <p class="carousel-infinite__fact-text">Umami — the fifth basic taste — comes from glutamates found
+              naturally in aged cheeses, mushrooms, and soy sauce.</p>
           </div>
         </div>
 
         <div class="carousel-infinite__slide">
-          <div class="carousel-infinite__img"><img src="./img/fact_10.jpg" alt="Carrot" loading="lazy"/></div>
+          <div class="carousel-infinite__img"><img src="./img/fact_10.jpg" alt="Carrot" loading="lazy" /></div>
           <div class="carousel-infinite__body">
             <span class="carousel-infinite__fact-num">Fact 10</span>
-            <p class="carousel-infinite__fact-text">Carrots were originally purple or yellow — the orange variety was selectively bred by Dutch farmers in the 17th century.</p>
+            <p class="carousel-infinite__fact-text">Carrots were originally purple or yellow — the orange variety was
+              selectively bred by Dutch farmers in the 17th century.</p>
           </div>
         </div>
 
         <!-- ── Duplicate for seamless loop ── -->
         <div class="carousel-infinite__slide">
-          <div class="carousel-infinite__img"><img src="./img/fact_1.jpg" alt="Honey" loading="lazy"/></div>
+          <div class="carousel-infinite__img"><img src="./img/fact_1.jpg" alt="Honey" loading="lazy" /></div>
           <div class="carousel-infinite__body">
             <span class="carousel-infinite__fact-num">Fact 01</span>
-            <p class="carousel-infinite__fact-text">Honey never spoils — archaeologists found 3,000-year-old honey in Egyptian tombs that was still perfectly edible.</p>
+            <p class="carousel-infinite__fact-text">Honey never spoils — archaeologists found 3,000-year-old honey in
+              Egyptian tombs that was still perfectly edible.</p>
           </div>
         </div>
 
         <div class="carousel-infinite__slide">
-          <div class="carousel-infinite__img"><img src="./img/fact_2.jpg" alt="Tomato" loading="lazy"/></div>
+          <div class="carousel-infinite__img"><img src="./img/fact_2.jpg" alt="Tomato" loading="lazy" /></div>
           <div class="carousel-infinite__body">
             <span class="carousel-infinite__fact-num">Fact 02</span>
-            <p class="carousel-infinite__fact-text">Tomatoes are botanically fruits but legally treated as vegetables due to their savory flavor profile.</p>
+            <p class="carousel-infinite__fact-text">Tomatoes are botanically fruits but legally treated as vegetables
+              due to their savory flavor profile.</p>
           </div>
         </div>
 
         <div class="carousel-infinite__slide">
-          <div class="carousel-infinite__img"><img src="./img/fact_3.jpg" alt="Dark Chocolate" loading="lazy"/></div>
+          <div class="carousel-infinite__img"><img src="./img/fact_3.jpg" alt="Dark Chocolate" loading="lazy" /></div>
           <div class="carousel-infinite__body">
             <span class="carousel-infinite__fact-num">Fact 03</span>
-            <p class="carousel-infinite__fact-text">Dark chocolate contains flavonoids — antioxidants that support cardiovascular health and improve blood flow.</p>
+            <p class="carousel-infinite__fact-text">Dark chocolate contains flavonoids — antioxidants that support
+              cardiovascular health and improve blood flow.</p>
           </div>
         </div>
 
         <div class="carousel-infinite__slide">
-          <div class="carousel-infinite__img"><img src="./img/fact_4.jpg" alt="Banana" loading="lazy"/></div>
+          <div class="carousel-infinite__img"><img src="./img/fact_4.jpg" alt="Banana" loading="lazy" /></div>
           <div class="carousel-infinite__body">
             <span class="carousel-infinite__fact-num">Fact 04</span>
-            <p class="carousel-infinite__fact-text">Bananas emit trace radiation from potassium-40, but you'd need to eat millions at once for it to be harmful.</p>
+            <p class="carousel-infinite__fact-text">Bananas emit trace radiation from potassium-40, but you'd need to
+              eat millions at once for it to be harmful.</p>
           </div>
         </div>
 
         <div class="carousel-infinite__slide">
-          <div class="carousel-infinite__img"><img src="./img/fact_5.jpg" alt="Sea Salt" loading="lazy"/></div>
+          <div class="carousel-infinite__img"><img src="./img/fact_5.jpg" alt="Sea Salt" loading="lazy" /></div>
           <div class="carousel-infinite__body">
             <span class="carousel-infinite__fact-num">Fact 05</span>
-            <p class="carousel-infinite__fact-text">Sea salt retains trace minerals like magnesium and calcium, giving it a richer, brinier flavor than table salt.</p>
+            <p class="carousel-infinite__fact-text">Sea salt retains trace minerals like magnesium and calcium, giving
+              it a richer, brinier flavor than table salt.</p>
           </div>
         </div>
 
         <div class="carousel-infinite__slide">
-          <div class="carousel-infinite__img"><img src="./img/fact_6.jpg" alt="Spice" loading="lazy"/></div>
+          <div class="carousel-infinite__img"><img src="./img/fact_6.jpg" alt="Spice" loading="lazy" /></div>
           <div class="carousel-infinite__body">
             <span class="carousel-infinite__fact-num">Fact 06</span>
-            <p class="carousel-infinite__fact-text">Capsaicin in spicy foods triggers heat receptors, prompting the brain to release endorphins — a natural high.</p>
+            <p class="carousel-infinite__fact-text">Capsaicin in spicy foods triggers heat receptors, prompting the
+              brain to release endorphins — a natural high.</p>
           </div>
         </div>
 
         <div class="carousel-infinite__slide">
-          <div class="carousel-infinite__img"><img src="./img/fact_7.jpg" alt="Avocado" loading="lazy"/></div>
+          <div class="carousel-infinite__img"><img src="./img/fact_7.jpg" alt="Avocado" loading="lazy" /></div>
           <div class="carousel-infinite__body">
             <span class="carousel-infinite__fact-num">Fact 07</span>
-            <p class="carousel-infinite__fact-text">Avocados are technically single-seeded berries packed with monounsaturated fats that lower bad cholesterol.</p>
+            <p class="carousel-infinite__fact-text">Avocados are technically single-seeded berries packed with
+              monounsaturated fats that lower bad cholesterol.</p>
           </div>
         </div>
 
         <div class="carousel-infinite__slide">
-          <div class="carousel-infinite__img"><img src="./img/fact_8.jpg" alt="Fermented foods" loading="lazy"/></div>
+          <div class="carousel-infinite__img"><img src="./img/fact_8.jpg" alt="Fermented foods" loading="lazy" /></div>
           <div class="carousel-infinite__body">
             <span class="carousel-infinite__fact-num">Fact 08</span>
-            <p class="carousel-infinite__fact-text">Fermented foods like kimchi, kefir, and yogurt contain live probiotics that strengthen the gut microbiome.</p>
+            <p class="carousel-infinite__fact-text">Fermented foods like kimchi, kefir, and yogurt contain live
+              probiotics that strengthen the gut microbiome.</p>
           </div>
         </div>
 
         <div class="carousel-infinite__slide">
-          <div class="carousel-infinite__img"><img src="./img/fact_9.jpg" alt="Umami" loading="lazy"/></div>
+          <div class="carousel-infinite__img"><img src="./img/fact_9.jpg" alt="Umami" loading="lazy" /></div>
           <div class="carousel-infinite__body">
             <span class="carousel-infinite__fact-num">Fact 09</span>
-            <p class="carousel-infinite__fact-text">Umami — the fifth basic taste — comes from glutamates found naturally in aged cheeses, mushrooms, and soy sauce.</p>
+            <p class="carousel-infinite__fact-text">Umami — the fifth basic taste — comes from glutamates found
+              naturally in aged cheeses, mushrooms, and soy sauce.</p>
           </div>
         </div>
 
         <div class="carousel-infinite__slide">
-          <div class="carousel-infinite__img"><img src="./img/fact_10.jpg" alt="Carrot" loading="lazy"/></div>
+          <div class="carousel-infinite__img"><img src="./img/fact_10.jpg" alt="Carrot" loading="lazy" /></div>
           <div class="carousel-infinite__body">
             <span class="carousel-infinite__fact-num">Fact 10</span>
-            <p class="carousel-infinite__fact-text">Carrots were originally purple or yellow — the orange variety was selectively bred by Dutch farmers in the 17th century.</p>
+            <p class="carousel-infinite__fact-text">Carrots were originally purple or yellow — the orange variety was
+              selectively bred by Dutch farmers in the 17th century.</p>
           </div>
         </div>
 
@@ -212,7 +241,8 @@
     </div><!-- /carousel-infinite -->
 
     <div class="container" style="display:flex;flex-direction:column;align-items:center;width:100%;">
-      <button class="scroll-cue" onclick="document.getElementById('units-section').scrollIntoView({behavior:'smooth'})" aria-label="Scroll to units">
+      <button class="scroll-cue" onclick="document.getElementById('units-section').scrollIntoView({behavior:'smooth'})"
+        aria-label="Scroll to units">
         <span class="scroll-cue__label">See your units</span>
         <span class="scroll-cue__arrow">↓</span>
       </button>
@@ -237,7 +267,7 @@
     function toggleProfileMenu() {
       document.getElementById('profile-dropdown').classList.toggle('open');
     }
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
       const pm = document.querySelector('.profile-menu');
       if (pm && !pm.contains(e.target)) {
         document.getElementById('profile-dropdown').classList.remove('open');
@@ -246,5 +276,5 @@
     document.addEventListener('DOMContentLoaded', initDashboard);
   </script>
 </body>
-</html>
 
+</html>

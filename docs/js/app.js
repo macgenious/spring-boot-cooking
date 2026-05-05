@@ -96,6 +96,9 @@ async function initDashboard() {
     renderUnitsGrid(0);
   } finally {
     hideLoading();
+    if (document.getElementById('fact-carousel-track')) {
+      startCarousel();
+    }
   }
 }
 
@@ -313,9 +316,65 @@ function renderFooterNav(unitId, completedUnits) {
 }
 
 /* ════════════════════════════
+   CAROUSEL LOGIC
+════════════════════════════ */
+let carouselIndex = 0;
+const totalFacts = 10;
+let carouselInterval = null;
+let isAnimating = false;
+
+function startCarousel() {
+  stopCarousel();
+  carouselInterval = setInterval(() => {
+    moveCarousel(1);
+  }, 7000);
+}
+
+function stopCarousel() {
+  if (carouselInterval) clearInterval(carouselInterval);
+}
+
+function moveCarousel(direction) {
+  const track = document.getElementById('fact-carousel-track');
+  if (!track || isAnimating) return;
+  
+  isAnimating = true;
+  carouselIndex += direction;
+  
+  if (carouselIndex < 0) {
+    track.style.transition = 'none';
+    track.style.transform = `translateX(-${totalFacts * 5}%)`;
+    void track.offsetWidth;
+    
+    carouselIndex = totalFacts - 1;
+    track.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+    track.style.transform = `translateX(-${carouselIndex * 5}%)`;
+    
+    setTimeout(() => { isAnimating = false; }, 600);
+  } else if (carouselIndex >= totalFacts) {
+    track.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+    track.style.transform = `translateX(-${carouselIndex * 5}%)`;
+    
+    setTimeout(() => {
+      track.style.transition = 'none';
+      carouselIndex = 0;
+      track.style.transform = `translateX(0%)`;
+      isAnimating = false;
+    }, 600);
+  } else {
+    track.style.transition = 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+    track.style.transform = `translateX(-${carouselIndex * 5}%)`;
+    setTimeout(() => { isAnimating = false; }, 600);
+  }
+  
+  startCarousel();
+}
+
+/* ════════════════════════════
    GLOBALS
 ════════════════════════════ */
 window.initDashboard = initDashboard;
 window.initLectureList = initLectureList;
 window.markDone = markDone;
 window.playVideo = playVideo;
+window.moveCarousel = moveCarousel;
