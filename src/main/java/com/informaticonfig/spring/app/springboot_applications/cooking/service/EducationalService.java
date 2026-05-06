@@ -45,6 +45,14 @@ public class EducationalService {
     private final ObjectMapper objectMapper;
     private final int totalLectures;
 
+    /** Supabase project base URL (e.g. https://xyz.supabase.co). */
+    @Value("${supabase.url}")
+    private String supabaseUrl;
+
+    /** Service-role key — bypasses RLS; used only for Admin API calls. */
+    @Value("${supabase.service-role-key}")
+    private String serviceRoleKey;
+
     /**
      * Creates the service with a Supabase-configured {@link WebClient}.
      *
@@ -287,6 +295,71 @@ public class EducationalService {
         );
     }
 
+    // ------------------------------------------------------------------
+    // Account deletion
+    // ------------------------------------------------------------------
+
+    /**
+     * Permanently deletes a user account by:
+     * <ol>
+     *   <li>Deleting all rows in {@code completed_lectures} belonging to the user.</li>
+     *   <li>Deleting the user's row in the {@code users} table.</li>
+     *   <li>Hard-deleting the auth identity via the Supabase Admin API
+     *       (requires service-role key, bypasses RLS).</li>
+     * </ol>
+     *
+     * @param userId the Supabase auth UUID to delete
+     * @param jwt    the caller's Supabase JWT (used for PostgREST data calls)
+     */
+    public void deleteUserAccount(String userId, String jwt) {
+        log.info("delete_account userId={}", userId);
+
+        // 1. Delete completed_lectures rows (foreign-key data first)
+        supabaseWebClient.delete()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/completed_lectures")
+                        .queryParam("user_id", "eq." + userId)
+                        .build())
+                .header("Authorization", "Bearer " + jwt)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+        log.info("deleted_completed_lectures userId={}", userId);
+
+        // 2. Delete the users table row
+        supabaseWebClient.delete()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/users")
+                        .queryParam("id", "eq." + userId)
+                        .build())
+                .header("Authorization", "Bearer " + jwt)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+        log.info("deleted_user_row userId={}", userId);
+
+        // 3. Hard-delete auth identity via Admin API (service-role key required)
+        try {
+            org.springframework.web.reactive.function.client.WebClient adminClient =
+                    org.springframework.web.reactive.function.client.WebClient.builder()
+                            .baseUrl(supabaseUrl)
+                            .defaultHeader("apikey", serviceRoleKey)
+                            .defaultHeader("Authorization", "Bearer " + serviceRoleKey)
+                            .defaultHeader("Content-Type", "application/json")
+                            .build();
+
+            adminClient.delete()
+                    .uri("/auth/v1/admin/users/" + userId)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+            log.info("deleted_auth_user userId={}", userId);
+        } catch (Exception e) {
+            log.warn("auth_user_delete_failed userId={} — data already deleted, continuing. error={}",
+                    userId, e.getMessage());
+        }
+    }
+
     // ------------------------------------------------------------------ 
     // Private helpers — Supabase REST calls
     // ------------------------------------------------------------------ 
@@ -303,7 +376,10 @@ public class EducationalService {
             ));
 
             supabaseWebClient.post()
-                    .uri("/completed_lectures")
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/completed_lectures")
+                            .queryParam("on_conflict", "user_id,lecture_id")
+                            .build())
                     .header("Authorization", "Bearer " + jwt)
                     .header("Prefer", "resolution=merge-duplicates")
                     .bodyValue(body)

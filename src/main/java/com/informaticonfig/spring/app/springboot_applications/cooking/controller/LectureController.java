@@ -2,14 +2,18 @@ package com.informaticonfig.spring.app.springboot_applications.cooking.controlle
 
 import com.informaticonfig.spring.app.springboot_applications.cooking.dto.LectureResponse;
 import com.informaticonfig.spring.app.springboot_applications.cooking.dto.NavigationRequest;
+import com.informaticonfig.spring.app.springboot_applications.cooking.dto.SendEmailRequest;
 import com.informaticonfig.spring.app.springboot_applications.cooking.dto.UserProgressResponse;
 import com.informaticonfig.spring.app.springboot_applications.cooking.service.EducationalService;
+import com.informaticonfig.spring.app.springboot_applications.cooking.service.EmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * REST controller exposing endpoints for the cooking education platform.
@@ -36,14 +40,21 @@ public class LectureController {
     private static final Logger log = LoggerFactory.getLogger(LectureController.class);
 
     private final EducationalService educationalService;
+    private final EmailService emailService;
+
+    @Value("${admin.email}")
+    private String adminEmail;
 
     /**
-     * Creates the controller with the required educational service dependency.
+     * Creates the controller with the required dependencies.
      *
      * @param educationalService the service handling all business logic
+     * @param emailService       the service for sending transactional emails
      */
-    public LectureController(EducationalService educationalService) {
+    public LectureController(EducationalService educationalService,
+                             EmailService emailService) {
         this.educationalService = educationalService;
+        this.emailService = emailService;
     }
 
     // ------------------------------------------------------------------
@@ -188,6 +199,54 @@ public class LectureController {
         UserProgressResponse updated = educationalService.navigatePrevious(
                 request.userId(), jwt);
         return ResponseEntity.ok(updated);
+    }
+
+    // ------------------------------------------------------------------
+    // Account deletion
+    // ------------------------------------------------------------------
+
+    /**
+     * Submits an account deletion request.
+     *
+     * <p>Sends a notification email to the administrator so they can review
+     * and manually process the deletion. No data is removed immediately.
+     * The user will receive a confirmation email once the admin acts.
+     *
+     * @param userId        the Supabase auth UUID requesting deletion
+     * @param body          JSON body containing {@code email} of the requesting user
+     * @param authorization the {@code Authorization} header containing the Supabase JWT
+     * @return {@code 200 OK} with a confirmation message
+     */
+    @DeleteMapping("/users/{userId}")
+    public ResponseEntity<Map<String, String>> deleteAccount(
+            @PathVariable String userId,
+            @RequestBody Map<String, String> body,
+            @RequestHeader("Authorization") String authorization) {
+
+        String jwt = extractJwt(authorization);
+        log.info("DELETE /api/users/{} deletion request submitted", userId);
+
+        String userEmail = body.getOrDefault("email", "unknown");
+
+        emailService.send(new SendEmailRequest(
+                adminEmail,
+                "⚠️ Account Deletion Request — ChefPath",
+                "<div style=\"font-family:system-ui,sans-serif;max-width:520px;margin:40px auto;color:#111;\">" +
+                "<h2 style=\"font-weight:600;font-size:20px;margin-bottom:8px;\">Deletion Request</h2>" +
+                "<p style=\"font-size:15px;color:#555;line-height:1.6;margin-bottom:16px;\">" +
+                "A user has requested that their ChefPath account be deleted.</p>" +
+                "<table style=\"width:100%;border-collapse:collapse;font-size:14px;\">" +
+                "<tr><td style=\"padding:8px;background:#f8f8f8;font-weight:600;\">User Email</td>" +
+                "<td style=\"padding:8px;background:#f8f8f8;\">" + userEmail + "</td></tr>" +
+                "<tr><td style=\"padding:8px;font-weight:600;\">User ID</td>" +
+                "<td style=\"padding:8px;\">" + userId + "</td></tr>" +
+                "</table>" +
+                "<p style=\"margin-top:24px;font-size:13px;color:#999;\">Review and delete via the Supabase dashboard if approved.</p>" +
+                "</div>"
+        ));
+
+        log.info("admin_deletion_request_sent userEmail={} userId={}", userEmail, userId);
+        return ResponseEntity.ok(Map.of("message", "Your deletion request has been submitted. We will review it and get back to you by email."));
     }
 
     // ------------------------------------------------------------------
